@@ -13,44 +13,63 @@ import Adafruit_PCA9685
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
 
-# Initialise the PCA9685 using the default address (0x40).
-pwm = Adafruit_PCA9685.PCA9685()
 
-# Alternatively specify a different address and/or bus:
-#pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
 
-# Configure min and max servo pulse lengths
-servo_min = 130  # Min pulse length out of 4096
-servo_max = 630  # Max pulse length out of 4096
+class Servo:
+    def __init__(self):
+        # Initialise the PCA9685 using the default address (0x40).
+        self.pwm = Adafruit_PCA9685.PCA9685()
 
-# Helper function to make setting a servo pulse width simpler.
-def set_servo_pulse(channel, pulse):
-    pulse_length = 1000000    # 1,000,000 us per second
-    pulse_length //= 60       # 60 Hz
-    print('{0}us per period'.format(pulse_length))
-    pulse_length //= 4096     # 12 bits of resolution
-    print('{0}us per bit'.format(pulse_length))
-    pulse *= 1000
-    pulse //= pulse_length
-    pwm.set_pwm(channel, 0, pulse)
+        # Alternatively specify a different address and/or bus:
+        #self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
 
-# Set frequency to 60hz, good for servos.
-pwm.set_pwm_freq(60)
+        # Configure min and max servo pulse lengths
+        self.servo_min = 130  # Min pulse length out of 4096
+        self.servo_max = 630  # Max pulse length out of 4096
 
-print('Moving servo on channel 0, press Ctrl-C to quit...')
+        # Set frequency to 60hz, good for servos.
+        self.pwm.set_pwm_freq(60)
 
-try:
+    # Helper function to make setting a servo pulse width simpler.
+    def set_servo_pulse(self, channel, pulse):
+            pulse_length = 1000000    # 1,000,000 us per second
+            pulse_length //= 60       # 60 Hz
+            print('{0}us per period'.format(pulse_length))
+            pulse_length //= 4096     # 12 bits of resolution
+            print('{0}us per bit'.format(pulse_length))
+            pulse *= 1000
+            pulse //= pulse_length
+            self.pwm.set_pwm(channel, 0, pulse)
 
-    while True:
-        # Move servo on channel O between extremes.
-        pwm.set_pwm(4, 0, servo_min)
-        time.sleep(1)
-        pwm.set_pwm(4, 0, servo_max)
-        time.sleep(1)
 
-except:
-    pass
+    def test(self):
+        print "test"
+#        try:
+        while True:
+            print "test while loop"
 
-pulse_start = 0
-pulse_stop  = 0
-pwm.set_pwm(4, pulse_start, pulse_stop)
+      	    # Move servo on channel O between extremes.
+      	    self.pwm.set_pwm(4, 0, self.servo_min)
+       	    time.sleep(1)
+            self.pwm.set_pwm(4, 0, self.servo_max)
+            time.sleep(1)
+	
+#	except:
+    	pass
+	
+	pulse_start = 0
+	pulse_stop  = 0
+	self.pwm.set_pwm(4, pulse_start, pulse_stop)
+	
+
+
+
+
+
+
+
+
+print('Moving servo on channel 4, press Ctrl-C to quit...')
+
+servo = Servo()
+servo.test()
