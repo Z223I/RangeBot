@@ -22,10 +22,23 @@ class Servo:
 
         # Alternatively specify a different address and/or bus:
         #self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
-
+        
         # Configure min and max servo pulse lengths
-        self.servo_min = 130  # Min pulse length out of 4096
-        self.servo_max = 630  # Max pulse length out of 4096
+
+        self.servo_MIN = 130  # Min pulse length out of 4096
+        self.servo_MAX = 630  # Max pulse length out of 4096
+        
+        # Configure min and max servo pulse lengths
+        self.servo_min = self.servo_MIN
+        self.servo_max = self.servo_MAX
+
+        # Establish constants for min and max angles.
+        self.ANGLE_MIN = -90
+        self.ANGLE_MAX = 90
+
+        # Angles can be used to control the servo instead of using frequency.
+        self.angle_min = self.ANGLE_MIN
+        self.angle_max = self.ANGLE_MAX
 
         # Set frequency to 60hz, good for servos.
         self.pwm.set_pwm_freq(60)
@@ -68,8 +81,9 @@ class Servo:
 
 
 
+if __name__ == "__main__":
 
-print('Moving servo on channel 4, press Ctrl-C to quit...')
+    print('Moving servo on channel 4, press Ctrl-C to quit...')
 
-servo = Servo()
-servo.test()
+    servo = Servo()
+    servo.test()
