@@ -1,8 +1,15 @@
+# Servo class
+# Author: Bruce Wilson
+# License: GNU 3
+
+# Based on...
 # Simple demo of of the PCA9685 PWM servo/LED controller library.
 # This will move channel 0 from min to max position repeatedly.
 # Author: Tony DiCola
 # License: Public Domain
-from __future__ import division
+
+
+#from __future__ import division
 import time
 
 # Import the PCA9685 module.
@@ -65,46 +72,69 @@ class Servo:
         return self.angle
 
     def set_angle(self, _angle):
+        """ Move the servo to the desired angle.
+        Set the attribule angle.
+        """
 
+        if _angle < self.ANGLE_MIN:
+            _angle = self.ANGLE_MIN
 
+        if _angle > self.ANGLE_MAX:
+            _angle = self.ANGLE_MAX
 
-        # TODO: Error checking
-
-
-
+        # Calculate the usable azimuth range in degrees.
         total_degrees = self.ANGLE_MAX - self.ANGLE_MIN
+
+        # Calculate the range of pulse durations.
         total_pulse = self.SERVO_MAX - self.SERVO_MIN
 
-        pulse_per_degree = total_pulse / total_degrees
+        pulse_per_degree = float(total_pulse) / float(total_degrees)
+
+#        print "Total usable pulse duration: ", total_pulse
+#        print "Pulse duration per degree: ", pulse_per_degree
+#        print "Adjusted angle: ", (_angle - self.ANGLE_MIN)
 
         pulse = self.SERVO_MIN + (pulse_per_degree * (_angle - self.ANGLE_MIN))
         pulse = int(pulse)
-
+        if pulse < self.SERVO_MIN:
+            pulse = self.SERVO_MIN 
+        if pulse > self.SERVO_MAX:
+            pulse = self.SERVO_MAX 
+        
         START_PULSE = 0
+
+#        print "Angle: ", _angle
+#        print "Pulse: ", pulse
         
         self.pwm.set_pwm(self.channel, START_PULSE, pulse)
+
+
+        # TODO: Calculate the current angle based on the pulse duration.
+
+
         self.angle = _angle
         return self.angle
 
 
     def test(self):
-        print "test"
+        """ method test uses the pulse duration to exercise the servo between 
+        min and max."""
 
         for i in range(2):
             START_PULSE = 0
-      	    self.pwm.set_pwm(self.channel, START_PULSE, self.servo_min)
-       	    time.sleep(1)
+            self.pwm.set_pwm(self.channel, START_PULSE, self.servo_min)
+            time.sleep(1)
             self.pwm.set_pwm(self.channel, START_PULSE, self.servo_max)
             time.sleep(1)
-	
-	
+
 
     def test2(self):
+        """ method test2 uses angles to exercise the servo between min and max."""
         for i in range(3):
             self.set_angle(-90)
-            time.sleep(1)
+            time.sleep(2)
             self.set_angle(90)
-            time.sleep(1)
+            time.sleep(2)
 
 
 
