@@ -16,7 +16,7 @@ import Adafruit_PCA9685
 
 
 class Servo:
-    def __init__(self):
+    def __init__(self, _channel):
         # Initialise the PCA9685 using the default address (0x40).
         self.pwm = Adafruit_PCA9685.PCA9685()
 
@@ -25,12 +25,12 @@ class Servo:
         
         # Configure min and max servo pulse lengths
 
-        self.servo_MIN = 130  # Min pulse length out of 4096
-        self.servo_MAX = 630  # Max pulse length out of 4096
+        self.SERVO_MIN = 130  # Min pulse length out of 4096
+        self.SERVO_MAX = 630  # Max pulse length out of 4096
         
         # Configure min and max servo pulse lengths
-        self.servo_min = self.servo_MIN
-        self.servo_max = self.servo_MAX
+        self.servo_min = self.SERVO_MIN
+        self.servo_max = self.SERVO_MAX
 
         # Establish constants for min and max angles.
         self.ANGLE_MIN = -90
@@ -40,8 +40,12 @@ class Servo:
         self.angle_min = self.ANGLE_MIN
         self.angle_max = self.ANGLE_MAX
 
+        self.channel = _channel
+
         # Set frequency to 60hz, good for servos.
         self.pwm.set_pwm_freq(60)
+
+        self.angle = None
 
     # Helper function to make setting a servo pulse width simpler.
     def set_servo_pulse(self, channel, pulse):
@@ -52,30 +56,55 @@ class Servo:
             print('{0}us per bit'.format(pulse_length))
             pulse *= 1000
             pulse //= pulse_length
-            self.pwm.set_pwm(channel, 0, pulse)
+            startPulse = 0
+            # pulse is now a duration.
+            self.pwm.set_pwm(channel, startPulse, pulse)
+
+
+    def angle(self):
+        return self.angle
+
+    def set_angle(self, _angle):
+
+
+
+        # TODO: Error checking
+
+
+
+        total_degrees = self.ANGLE_MAX - self.ANGLE_MIN
+        total_pulse = self.SERVO_MAX - self.SERVO_MIN
+
+        pulse_per_degree = total_pulse / total_degrees
+
+        pulse = self.SERVO_MIN + (pulse_per_degree * (_angle - self.ANGLE_MIN))
+        pulse = int(pulse)
+
+        START_PULSE = 0
+        
+        self.pwm.set_pwm(self.channel, START_PULSE, pulse)
+        self.angle = _angle
+        return self.angle
 
 
     def test(self):
         print "test"
-#        try:
-        while True:
-            print "test while loop"
 
-      	    # Move servo on channel O between extremes.
-      	    self.pwm.set_pwm(4, 0, self.servo_min)
+        for i in range(2):
+            START_PULSE = 0
+      	    self.pwm.set_pwm(self.channel, START_PULSE, self.servo_min)
        	    time.sleep(1)
-            self.pwm.set_pwm(4, 0, self.servo_max)
+            self.pwm.set_pwm(self.channel, START_PULSE, self.servo_max)
             time.sleep(1)
 	
-#	except:
-    	pass
-	
-	pulse_start = 0
-	pulse_stop  = 0
-	self.pwm.set_pwm(4, pulse_start, pulse_stop)
 	
 
-
+    def test2(self):
+        for i in range(3):
+            self.set_angle(-90)
+            time.sleep(1)
+            self.set_angle(90)
+            time.sleep(1)
 
 
 
@@ -85,5 +114,8 @@ if __name__ == "__main__":
 
     print('Moving servo on channel 4, press Ctrl-C to quit...')
 
-    servo = Servo()
+    servo = Servo(4)
     servo.test()
+    time.sleep(1.5)
+
+    servo.test2()
