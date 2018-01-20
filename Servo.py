@@ -13,7 +13,7 @@
 import time
 
 # Import the PCA9685 module.
-import Adafruit_PCA9685
+import PCA9685
 
 
 # Uncomment to enable debug output.
@@ -25,7 +25,7 @@ import Adafruit_PCA9685
 class Servo:
     def __init__(self, _channel):
         # Initialise the PCA9685 using the default address (0x40).
-        self.pwm = Adafruit_PCA9685.PCA9685()
+        self.pwm = PCA9685.PCA9685()
 
         # Alternatively specify a different address and/or bus:
         #self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
