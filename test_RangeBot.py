@@ -24,7 +24,15 @@ class TestRangeBot(unittest.TestCase):
     def test___init___(self):
         self.assertEqual(True, True)
 
-#    def test_listify(self):
+    def test_scan(self):
+        pass
+
+    def test_find_target(self):
+        pass
+
+    def test_exect(self):
+        pass
+
 
 
 
