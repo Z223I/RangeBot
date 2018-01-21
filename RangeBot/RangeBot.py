@@ -2,7 +2,7 @@
 
 import sys
 sys.path.append("/home/pi/pythondev/Lidar-Lite-3_Threaded")
-#print(sys.path)
+# print(sys.path)
 from LidarLiteChild import LidarLiteChild
 from Servo import Servo
 import time
@@ -36,7 +36,7 @@ class RangeBot():
 
         current_angle = min_angle
         while current_angle <= max_angle:
-            print("Angle: ", current_angle)
+            # print("Angle: ", current_angle)
 
             # Position the servo
             self.servo.set_angle(current_angle)
@@ -71,7 +71,24 @@ class RangeBot():
         # be found.  Am using Python 3.  The page said xrange was built-in.
         # index_min = min(xrange(len(ranges)), key=ranges.__getitem__)
 
+        # Method #1 Just use the minimum.
         minimum, index = min((ranges[i], i) for i in range(len(ranges)))
+
+        # Method #2 Average three ranges and then take the minimum.
+        range_averages = []
+        range_count = len(ranges)
+        assert(range_count >= 3) # If it isn't the following code will break.
+        for i in range(range_count):
+            if i == 0 or i == range_count - 1:
+                # Just copy the number.
+                mean_val = ranges[i]
+            else:
+                mean_val = (ranges[i - 1] + ranges[i] + ranges[i + 1]) / 3
+            range_averages.append(mean_val)
+        minimum, index = min((range_averages[i], i) 
+            for i in range(len(range_averages)))
+
+        minimum = int(minimum * 10) / 10.0
 
         location = [angles[index], minimum]
 
