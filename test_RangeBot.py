@@ -30,7 +30,7 @@ class TestRangeBot(unittest.TestCase):
     def test_find_target(self):
         pass
 
-    def test_exect(self):
+    def test_execute(self):
         pass
 
 
