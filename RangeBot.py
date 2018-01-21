@@ -16,6 +16,8 @@ class RangeBot():
     the target."""
 
     def __init__(self, servo_channel):
+        """ Create the Servo and LidarLiteChild objects."""
+
         self.servo = Servo( servo_channel )
         self.lidar = LidarLiteChild()
         init_ok = self.lidar.init()
@@ -26,6 +28,10 @@ class RangeBot():
     def scan(self, min_angle, max_angle, step):
         """ The scan method uses the servo and Lidar to
         return a list of angle and range pairs."""
+
+        # Initialize the angle and range pairs list.
+        angles = []
+        ranges = []
 
         current_angle = min_angle
         while current_angle <= max_angle:
@@ -42,34 +48,51 @@ class RangeBot():
                 time.sleep(.25)
 
             # Read the lidar
-            self.lidar.read()
+            range = self.lidar.read()
+            range = int( range * 10 )
+            range = float( range ) / 10.0 
 
-            # Place [angle, range] in list
+            # Place angle and range in respective lists
+            angles.append( current_angle )
+            ranges.append( range )
 
             # Increment current angle
             current_angle += step
 
-        return [ [-20, 5.], [0, 3.], [20, 5] ]
+        return angles, ranges
 
-    def find_target(self, range_list):
+
+    def find_target(self, angles, ranges):
         """ The find_target method takes as input a list of
         angle and range pairs.  It searches the list for the 
         smallest range."""
 
-        return [0.0, 20.0]
+        # Found the next line on StackOverflow.com.  But, xrange couldn't
+        # be found.  Am using Python 3.  The page said xrange was built-in.
+        #index_min = min( xrange(len(ranges)), key=ranges.__getitem__ )
+
+        minimum, index = min( (ranges[i], i) for i in range( len(ranges) ) )
+
+        location = [ angles[index], minimum ]
+
+        return location
 
     def execute(self, min_angle, max_angle, step):
-        list = self.scan(min_angle, max_angle, step)
-        targetLocation = self.find_target(list)
-        return targetLocation
+        angles, ranges = self.scan(min_angle, max_angle, step)
+        print( "Angles: ", angles )
+        print( "Ranges: ", ranges )
+
+        target_location = self.find_target(angles, ranges)
+#        print( "Target location: ", target_location
+        return target_location
 
 
 if __name__ == "__main__":
     range_bot = RangeBot(4)
 
-    min_angle = -5
-    max_angle = 5
-    step = 1
+    min_angle = -60
+    max_angle = 60
+    step = 10
 
     target_location = range_bot.execute( min_angle, max_angle, step )
     print ( target_location )
