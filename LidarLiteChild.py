@@ -43,6 +43,11 @@ class LidarLiteChild(Lidar_Lite):
       print ("Lidar not connected.")
       return False
 
+  def read(self):
+        # Read current range.
+        distance_cm = self.getDistance()
+        distance_inch = distance_cm / 2.54
+        return distance_inch
 
 
   def terminate(self):

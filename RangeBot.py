@@ -17,6 +17,11 @@ class RangeBot():
 
     def __init__(self, servo_channel):
         self.servo = Servo( servo_channel )
+        self.lidar = LidarLiteChild()
+        init_ok = self.lidar.init()
+        if not init_ok:
+            print( "ERROR: Lidar failed to initialize." )
+
 
     def scan(self, min_angle, max_angle, step):
         """ The scan method uses the servo and Lidar to
@@ -37,6 +42,7 @@ class RangeBot():
                 time.sleep(.25)
 
             # Read the lidar
+            self.lidar.read()
 
             # Place [angle, range] in list
 
