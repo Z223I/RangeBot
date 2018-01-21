@@ -5,7 +5,6 @@ from Servo import Servo
 import time
 
 
-
 class RangeBot():
 
     """ RangeBot uses a servo and Lidar to find a target.
@@ -18,12 +17,11 @@ class RangeBot():
     def __init__(self, servo_channel):
         """ Create the Servo and LidarLiteChild objects."""
 
-        self.servo = Servo( servo_channel )
+        self.servo = Servo(servo_channel)
         self.lidar = LidarLiteChild()
         init_ok = self.lidar.init()
         if not init_ok:
-            print( "ERROR: Lidar failed to initialize." )
-
+            print("ERROR: Lidar failed to initialize.")
 
     def scan(self, min_angle, max_angle, step):
         """ The scan method uses the servo and Lidar to
@@ -35,10 +33,10 @@ class RangeBot():
 
         current_angle = min_angle
         while current_angle <= max_angle:
-            print( "Angle: ", current_angle )
+            print("Angle: ", current_angle)
 
             # Position the servo
-            self.servo.set_angle( current_angle )
+            self.servo.set_angle(current_angle)
 
             # Allow servo to finish its move
             if current_angle == min_angle:
@@ -49,18 +47,17 @@ class RangeBot():
 
             # Read the lidar
             range = self.lidar.read()
-            range = int( range * 10 )
-            range = float( range ) / 10.0 
+            range = int(range * 10)
+            range = float(range) / 10.0
 
             # Place angle and range in respective lists
-            angles.append( current_angle )
-            ranges.append( range )
+            angles.append(current_angle)
+            ranges.append(range)
 
             # Increment current angle
             current_angle += step
 
         return angles, ranges
-
 
     def find_target(self, angles, ranges):
         """ The find_target method takes as input a list of
@@ -69,21 +66,21 @@ class RangeBot():
 
         # Found the next line on StackOverflow.com.  But, xrange couldn't
         # be found.  Am using Python 3.  The page said xrange was built-in.
-        #index_min = min( xrange(len(ranges)), key=ranges.__getitem__ )
+        # index_min = min(xrange(len(ranges)), key=ranges.__getitem__)
 
-        minimum, index = min( (ranges[i], i) for i in range( len(ranges) ) )
+        minimum, index = min((ranges[i], i) for i in range(len(ranges)))
 
-        location = [ angles[index], minimum ]
+        location = [angles[index], minimum]
 
         return location
 
     def execute(self, min_angle, max_angle, step):
         angles, ranges = self.scan(min_angle, max_angle, step)
-        print( "Angles: ", angles )
-        print( "Ranges: ", ranges )
+        print("Angles: ", angles)
+        print("Ranges: ", ranges)
 
         target_location = self.find_target(angles, ranges)
-#        print( "Target location: ", target_location
+#        print("Target location: ", target_location
         return target_location
 
 
@@ -94,7 +91,7 @@ if __name__ == "__main__":
     max_angle = 60
     step = 10
 
-    target_location = range_bot.execute( min_angle, max_angle, step )
-    print ( target_location )
+    target_location = range_bot.execute(min_angle, max_angle, step)
+    print(target_location)
 
-    print ( "Bye!" )
+    print("Bye!")
