@@ -1,4 +1,4 @@
-#! 
+#!usr/bin/python
 
 """Servo class
 Author: Bruce Wilson
@@ -22,8 +22,11 @@ import PCA9685
 # import logging
 # logging.basicConfig(level=logging.DEBUG)
 
-
 class Servo:
+
+    """ Class: Servo
+    This class provides a mechanism to control a servo based on angles.
+    The is a method for using pulse duration."""
 
     # Configure min and max servo pulse lengths
     SERVO_MIN = 130  # Min pulse length out of 4096
@@ -34,6 +37,10 @@ class Servo:
     ANGLE_MAX = 90
 
     def __init__(self, _channel):
+        """ Method: __init__
+        Provides set up necessary to control a servo using
+        Adafruit's PCA9685 PWM board."""
+
         # Initialise the PCA9685 using the default address (0x40).
         self.pwm = PCA9685.PCA9685()
 
@@ -55,11 +62,11 @@ class Servo:
 
         self.angle = None
 
-    """ set_servo_pulse method
-    Author: Tony DiCola"""
-
     # Helper function to make setting a servo pulse width simpler.
     def set_servo_pulse(self, channel, pulse):
+
+        """ set_servo_pulse method
+        Author: Tony DiCola"""
         pulse_length = 1000000    # 1,000,000 us per second
         pulse_length //= 60       # 60 Hz
         print('{0}us per period'.format(pulse_length))
@@ -67,16 +74,14 @@ class Servo:
         print('{0}us per bit'.format(pulse_length))
         pulse *= 1000
         pulse //= pulse_length
-        self.pwm.set_pwm(channel, o, pulse)
+        self.pwm.set_pwm(channel, 0, pulse)
 
-    """ Method: angle
-    Returns the approximate angle of the servo.
-    """
-    def angle(self):
+    def get_angle(self):
+
+        """ Method: angle
+        Returns the approximate angle of the servo."""
+
         return self.angle
-
-    """ Method set_angle
-    Sets the angle of the servo."""
 
     def set_angle(self, _angle):
         """ Move the servo to the desired angle.
@@ -120,10 +125,9 @@ class Servo:
         self.angle = _angle
         return self.angle
 
-    """ method test uses the pulse duration to exercise the servo between
-    min and max."""
-
     def test(self):
+        """ method test uses the pulse duration to exercise the servo between
+        min and max."""
 
         for i in range(2):
             START_PULSE = 0
@@ -132,9 +136,9 @@ class Servo:
             self.pwm.set_pwm(self.channel, START_PULSE, self.servo_max)
             time.sleep(1)
 
-    """ method test2 uses angles to exercise the servo between min
-    and max."""
     def test2(self):
+        """ method test2 uses angles to exercise the servo between min
+        and max."""
         for i in range(3):
             self.set_angle(-90)
             time.sleep(2)
