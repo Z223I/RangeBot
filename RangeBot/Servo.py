@@ -1,13 +1,15 @@
-# Servo class
-# Author: Bruce Wilson
-# License: GNU 3
+#! 
 
-# Based on...
-# Simple demo of of the PCA9685 PWM servo/LED controller library.
-# This will move channel 0 from min to max position repeatedly.
-# Author: Tony DiCola
-# License: Public Domain
+"""Servo class
+Author: Bruce Wilson
+License: GNU 3
 
+Based on...
+Simple demo of of the PCA9685 PWM servo/LED controller library.
+This will move channel 0 from min to max position repeatedly.
+Author: Tony DiCola
+License: Public Domain
+"""
 
 # from __future__ import division
 import time
@@ -22,6 +24,15 @@ import PCA9685
 
 
 class Servo:
+
+    # Configure min and max servo pulse lengths
+    SERVO_MIN = 130  # Min pulse length out of 4096
+    SERVO_MAX = 630  # Max pulse length out of 4096
+
+    # Establish constants for min and max angles.
+    ANGLE_MIN = -90
+    ANGLE_MAX = 90
+
     def __init__(self, _channel):
         # Initialise the PCA9685 using the default address (0x40).
         self.pwm = PCA9685.PCA9685()
@@ -30,21 +41,12 @@ class Servo:
         # self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
 
         # Configure min and max servo pulse lengths
-
-        self.SERVO_MIN = 130  # Min pulse length out of 4096
-        self.SERVO_MAX = 630  # Max pulse length out of 4096
-
-        # Configure min and max servo pulse lengths
-        self.servo_min = self.SERVO_MIN
-        self.servo_max = self.SERVO_MAX
-
-        # Establish constants for min and max angles.
-        self.ANGLE_MIN = -90
-        self.ANGLE_MAX = 90
+        self.servo_min = Servo.SERVO_MIN
+        self.servo_max = Servo.SERVO_MAX
 
         # Angles can be used to control the servo instead of using frequency.
-        self.angle_min = self.ANGLE_MIN
-        self.angle_max = self.ANGLE_MAX
+        self.angle_min = Servo.ANGLE_MIN
+        self.angle_max = Servo.ANGLE_MAX
 
         self.channel = _channel
 
@@ -53,21 +55,28 @@ class Servo:
 
         self.angle = None
 
+    """ set_servo_pulse method
+    Author: Tony DiCola"""
+
     # Helper function to make setting a servo pulse width simpler.
     def set_servo_pulse(self, channel, pulse):
-            pulse_length = 1000000    # 1,000,000 us per second
-            pulse_length //= 60       # 60 Hz
-            print('{0}us per period'.format(pulse_length))
-            pulse_length //= 4096     # 12 bits of resolution
-            print('{0}us per bit'.format(pulse_length))
-            pulse *= 1000
-            pulse //= pulse_length
-            startPulse = 0
-            # pulse is now a duration.
-            self.pwm.set_pwm(channel, startPulse, pulse)
+        pulse_length = 1000000    # 1,000,000 us per second
+        pulse_length //= 60       # 60 Hz
+        print('{0}us per period'.format(pulse_length))
+        pulse_length //= 4096     # 12 bits of resolution
+        print('{0}us per bit'.format(pulse_length))
+        pulse *= 1000
+        pulse //= pulse_length
+        self.pwm.set_pwm(channel, o, pulse)
 
+    """ Method: angle
+    Returns the approximate angle of the servo.
+    """
     def angle(self):
         return self.angle
+
+    """ Method set_angle
+    Sets the angle of the servo."""
 
     def set_angle(self, _angle):
         """ Move the servo to the desired angle.
@@ -111,9 +120,10 @@ class Servo:
         self.angle = _angle
         return self.angle
 
+    """ method test uses the pulse duration to exercise the servo between
+    min and max."""
+
     def test(self):
-        """ method test uses the pulse duration to exercise the servo between
-        min and max."""
 
         for i in range(2):
             START_PULSE = 0
@@ -122,9 +132,9 @@ class Servo:
             self.pwm.set_pwm(self.channel, START_PULSE, self.servo_max)
             time.sleep(1)
 
+    """ method test2 uses angles to exercise the servo between min
+    and max."""
     def test2(self):
-        """ method test2 uses angles to exercise the servo between min
-        and max."""
         for i in range(3):
             self.set_angle(-90)
             time.sleep(2)
@@ -135,8 +145,11 @@ if __name__ == "__main__":
 
     print('Moving servo on channel 4, press Ctrl-C to quit...')
 
-    servo = Servo(4)
-    servo.test()
-    time.sleep(1.5)
+    SERVO = Servo(4)
 
-    servo.test2()
+    while True:
+        SERVO.test()
+        time.sleep(1.5)
+
+        SERVO.test2()
+        time.sleep(3)
