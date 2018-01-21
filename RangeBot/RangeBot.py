@@ -1,5 +1,8 @@
 #!usr/bin/python
 
+import sys
+sys.path.append("/home/pi/pythondev/Lidar-Lite-3_Threaded")
+#print(sys.path)
 from LidarLiteChild import LidarLiteChild
 from Servo import Servo
 import time

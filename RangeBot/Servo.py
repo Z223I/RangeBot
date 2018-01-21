@@ -14,7 +14,11 @@ License: Public Domain
 # from __future__ import division
 import time
 
+import sys
+
 # Import the PCA9685 module.
+sys.path.append("/home/pi/pythondev/Adafruit_Python_PCA9685/Adafruit_PCA9685")
+print( sys.path )
 import PCA9685
 
 
