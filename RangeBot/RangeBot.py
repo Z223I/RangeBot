@@ -79,9 +79,12 @@ class RangeBot():
         range_count = len(ranges)
         assert(range_count >= 3) # If it isn't the following code will break.
         for i in range(range_count):
-            if i == 0 or i == range_count - 1:
-                # Just copy the number.
-                mean_val = ranges[i]
+            if i == 0:
+                # Use first three numbers of the list.
+                mean_val = (ranges[i] + ranges[i + 1] + ranges[i + 2]) / 3
+            elif i == range_count - 1:
+                # Use last three numbers of the list.
+                mean_val = (ranges[i - 2] + ranges[i - 1] + ranges[i]) / 3
             else:
                 mean_val = (ranges[i - 1] + ranges[i] + ranges[i + 1]) / 3
             range_averages.append(mean_val)
@@ -107,9 +110,9 @@ class RangeBot():
 if __name__ == "__main__":
     range_bot = RangeBot(4)
 
-    min_angle = -60
-    max_angle = 60
-    step = 10
+    min_angle = -5
+    max_angle = 5
+    step = .5
 
     target_location = range_bot.execute(min_angle, max_angle, step)
     print(target_location)
