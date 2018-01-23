@@ -26,6 +26,8 @@ class RangeBot():
         if not init_ok:
             print("ERROR: Lidar failed to initialize.")
 
+        self.clip_distance = 5
+
     def scan(self, min_angle, max_angle, step):
         """ The scan method uses the servo and Lidar to
         return a list of angle and range pairs."""
@@ -97,6 +99,32 @@ class RangeBot():
 
         return location
 
+    def find_target2(self, angles, ranges):
+        "find_target2"
+
+        print
+        print(ranges)
+        
+        minimum, index = min((ranges[i], i) for i in range(len(ranges)))
+
+        print(minimum)
+
+        clipped_ranges = []
+        for i in range(len(ranges)):
+            if ranges[i] < minimum + self.clip_distance:
+               clipped_ranges.append(1)
+            else:
+               clipped_ranges.append(0)
+
+        print(clipped_ranges)
+
+
+
+#        self.clip_distance = 5
+#        self.array[1]
+
+
+
     def execute(self, min_angle, max_angle, step):
         angles, ranges = self.scan(min_angle, max_angle, step)
         print("Angles: ", angles)
@@ -104,15 +132,18 @@ class RangeBot():
 
         target_location = self.find_target(angles, ranges)
 #        print("Target location: ", target_location
+
+        self.find_target2(angles, ranges)
+
         return target_location
 
 
 if __name__ == "__main__":
     range_bot = RangeBot(4)
 
-    min_angle = -5
-    max_angle = 5
-    step = .5
+    min_angle = -10
+    max_angle = 10
+    step = 1
 
     target_location = range_bot.execute(min_angle, max_angle, step)
     print(target_location)
