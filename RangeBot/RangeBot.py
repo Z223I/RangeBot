@@ -26,7 +26,12 @@ class RangeBot():
         if not init_ok:
             print("ERROR: Lidar failed to initialize.")
 
+        # This is the default clip distance.
         self.clip_distance = 5
+
+    def set_clip_distance(self, distance):
+        self.clip_distance = distance
+
 
     def scan(self, min_angle, max_angle, step):
         """ The scan method uses the servo and Lidar to
