@@ -6,7 +6,7 @@ sys.path.append("/home/pi/pythondev/Lidar-Lite-3_Threaded")
 from LidarLiteChild import LidarLiteChild
 from Servo import Servo
 import time
-
+import math
 
 class RangeBot():
 
@@ -151,15 +151,12 @@ class RangeBot():
         # end else
 
         print("Target angle and range: ", return_angle, return_range)
-        return return_angle, return_range
-
-
-#        self.clip_distance = 5
-#        self.array[1]
-
+        return return_angle, return_range, target_hits
 
 
     def execute(self, min_angle, max_angle, step):
+        """execute"""
+
         angles, ranges = self.scan(min_angle, max_angle, step)
         print("Angles: ", angles)
         print("Ranges: ", ranges)
@@ -167,19 +164,52 @@ class RangeBot():
         target_location = self.find_target(angles, ranges)
 #        print("Target location: ", target_location
 
-        self.find_target2(angles, ranges)
+        target_angle, target_range, target_hits = self.find_target2(angles, ranges)
 
         return target_location
+
+    def execute_hunt(self, est_tgt_r, target_width):
+        """execute
+
+        type: float
+              est_tgt_r Estimated target range
+
+        type: int
+              target_width
+        """
+
+        # desired hits on target
+        desired_hits = 7
+        total_steps = desired_hits * 3
+
+        angle_rads = math.atan(target_width / est_tgt_r)
+
+        scan_rads = angle_rads * 3
+
+        scan_angle = math.degrees(scan_rads)
+
+        scan_half_angle = scan_angle / 2.0
+
+        step_angle = scan_angle / total_steps
+
+        angles, ranges = self.scan(-scan_half_angle, scan_half_angle, step_angle)
+
+        target_angle, target_range, target_hits = self.find_target2(angles, ranges)
+
 
 
 if __name__ == "__main__":
     range_bot = RangeBot(4)
 
-    min_angle = -10
-    max_angle = 10
-    step = 1
+#    min_angle = -10
+#    max_angle = 10
+#    step = 1
 
-    target_location = range_bot.execute(min_angle, max_angle, step)
-    print(target_location)
+#    target_location = range_bot.execute(min_angle, max_angle, step)
+#    print(target_location)
+
+    target_range_inches = 18
+    target_width_inches = 3
+    range_bot.execute_hunt(target_range_inches, target_width_inches)
 
     print("Bye!")
