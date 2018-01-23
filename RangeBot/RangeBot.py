@@ -114,15 +114,44 @@ class RangeBot():
 
         print(minimum)
 
+        target_marker = 1
         clipped_ranges = []
         for i in range(len(ranges)):
             if ranges[i] < minimum + self.clip_distance:
-               clipped_ranges.append(1)
+               clipped_ranges.append(target_marker)
             else:
                clipped_ranges.append(0)
 
         print(clipped_ranges)
 
+        target_hits = clipped_ranges.count(target_marker)
+        print("Target hits: ", target_hits)
+
+        target_center_index = None
+        if target_hits > 0:
+            mid_target = int(target_hits / 2)
+
+            # Find first target hit
+            for i in range(len(ranges)):
+                if clipped_ranges[i] == target_marker:
+                    first_target_hit = i
+                    break
+            # end for
+            # Calculate center of target
+            target_center_index = first_target_hit + mid_target
+
+        # end if
+
+        if target_center_index > -1:
+            return_angle = angles[target_center_index]
+            return_range = ranges[target_center_index]
+        else:
+            return_angle = None
+            return_range = None
+        # end else
+
+        print("Target angle and range: ", return_angle, return_range)
+        return return_angle, return_range
 
 
 #        self.clip_distance = 5
