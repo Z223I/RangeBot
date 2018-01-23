@@ -208,8 +208,14 @@ if __name__ == "__main__":
 #    target_location = range_bot.execute(min_angle, max_angle, step)
 #    print(target_location)
 
-    target_range_inches = 18
-    target_width_inches = 3
-    range_bot.execute_hunt(target_range_inches, target_width_inches)
+    # The units of measurement do not matter.  We are getting a ratio to
+    # calculate the atan.
+    target_range = input("Target range: ")
+    target_range = int(target_range)
+
+    target_width = input("Target width: ")
+    target_width = int(target_width)
+
+    range_bot.execute_hunt(target_range, target_width)
 
     print("Bye!")
