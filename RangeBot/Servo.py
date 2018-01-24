@@ -46,7 +46,8 @@ class Servo:
         Adafruit's PCA9685 PWM board."""
 
         # Initialise the PCA9685 using the default address (0x40).
-        self.pwm = PCA9685.PCA9685()
+#        self.pwm = PCA9685.PCA9685()
+        self.pwm = PCA9685.PCA9685(address=0x41)
 
         # Alternatively specify a different address and/or bus:
         # self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)

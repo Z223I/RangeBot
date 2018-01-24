@@ -199,7 +199,7 @@ class RangeBot():
 
 
 if __name__ == "__main__":
-    range_bot = RangeBot(4)
+    range_bot = RangeBot(3)
 
 #    min_angle = -10
 #    max_angle = 10
