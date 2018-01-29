@@ -152,9 +152,9 @@ class Servo:
 
 if __name__ == "__main__":
 
-    print('Moving servo on channel 4, press Ctrl-C to quit...')
+    print('Moving servo on channel 3, press Ctrl-C to quit...')
 
-    SERVO = Servo(4)
+    SERVO = Servo(3)
 
     while True:
         SERVO.test()
