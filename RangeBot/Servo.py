@@ -92,6 +92,8 @@ class Servo:
         """ Move the servo to the desired angle.
         Set the attribule angle.
         """
+        # Adjust for slight error in servo.
+        _angle += 6
 
         if _angle < self.ANGLE_MIN:
             _angle = self.ANGLE_MIN
@@ -150,15 +152,20 @@ class Servo:
             self.set_angle(90)
             time.sleep(2)
 
+    def center(self):
+        self.set_angle(0)
+
 if __name__ == "__main__":
 
     print('Moving servo on channel 3, press Ctrl-C to quit...')
 
     SERVO = Servo(3)
 
-    while True:
-        SERVO.test()
-        time.sleep(1.5)
+    SERVO.center()
 
-        SERVO.test2()
-        time.sleep(3)
+#    while True:
+#        SERVO.test()
+#        time.sleep(1.5)
+
+#        SERVO.test2()
+#        time.sleep(3)

@@ -8,6 +8,8 @@ from Servo import Servo
 import time
 import math
 
+#import pdb
+
 class RangeBot():
 
     """ RangeBot uses a servo and Lidar to find a target.
@@ -37,6 +39,7 @@ class RangeBot():
         """ The scan method uses the servo and Lidar to
         return a list of angle and range pairs."""
 
+#        pdb.set_trace()
         # Initialize the angle and range pairs list.
         angles = []
         ranges = []
@@ -221,11 +224,17 @@ if __name__ == "__main__":
 
     # The units of measurement do not matter.  We are getting a ratio to
     # calculate the atan.
-    target_range = input("Target range: ")
-    target_range = int(target_range)
+    USE_INPUT = False
 
-    target_width = input("Target width: ")
-    target_width = int(target_width)
+    if USE_INPUT:
+        target_range = input("Target range: ")
+        target_range = int(target_range)
+
+        target_width = input("Target width: ")
+        target_width = int(target_width)
+    else:
+        target_range = 20
+        target_width = 3
 
     range_bot.execute_hunt(target_range, target_width)
 
