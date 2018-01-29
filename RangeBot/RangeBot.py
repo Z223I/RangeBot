@@ -110,12 +110,12 @@ class RangeBot():
     def find_target2(self, angles, ranges):
         "find_target2"
 
-        print
-        print(ranges)
+#        print
+#        print(ranges)
         
         minimum, index = min((ranges[i], i) for i in range(len(ranges)))
 
-        print(minimum)
+#        print(minimum)
 
         target_marker = 1
         clipped_ranges = []
