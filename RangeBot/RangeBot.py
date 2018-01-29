@@ -150,7 +150,7 @@ class RangeBot():
             return_range = None
         # end else
 
-        print("Target angle and range: ", return_angle, return_range)
+        print("Target angle and range: {:.2f}, {:.1f}".format(return_angle, return_range))
         return return_angle, return_range, target_hits
 
 
@@ -176,11 +176,21 @@ class RangeBot():
 
         type: int
               target_width
+
+        rtype: float
+               target_angle (deg)
+
+        rtype: float
+               target_range (inches)
+
+        rtype: int
+               hits as a count
         """
 
+        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
         # desired hits on target
         desired_hits = 7
-        total_steps = desired_hits * 3
+        total_steps = desired_hits * 3.00
 
         angle_rads = math.atan(target_width / est_tgt_r)
 
@@ -196,6 +206,7 @@ class RangeBot():
 
         target_angle, target_range, target_hits = self.find_target2(angles, ranges)
 
+        return target_angle, target_range, target_hits
 
 
 if __name__ == "__main__":
