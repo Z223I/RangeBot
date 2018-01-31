@@ -23,7 +23,7 @@ class TestRangeBot(unittest.TestCase):
         pass
 
     def test___init___(self):
-        self.assertEqual(self.test_range_bot.clip_distance, 5)
+        self.assertEqual(self.test_range_bot.clip_distance, 10)
 
     def test_set_clip_distance(self):
         val = 6
@@ -37,6 +37,30 @@ class TestRangeBot(unittest.TestCase):
         pass
 
     def test_execute(self):
+        pass
+
+    def test_valid_hunt_A(self):
+        hits = 7
+        ranges = [100,100,100,100,100,100,100, \
+            24, 24, 24, 24, 24, 24, 24, \
+            100,100,100,100,100,100,100]
+
+        valid = self.test_range_bot.valid_hunt(ranges, hits)
+        self.assertTrue(valid)
+
+    def test_valid_hunt_B(self):
+        # Four hits is below the threshold for a valid hunt.
+        hits = 4
+
+        # The values of ranges is irrelavent.
+        ranges = [100,100,100,100,100,100,100, \
+            24, 24, 24, 24, 24, 24, 24, \
+            100,100,100,100,100,100,100]
+
+        valid = self.test_range_bot.valid_hunt(ranges, hits)
+        self.assertFalse(valid)
+
+    def test_execute_hunt(self):
         pass
 
 

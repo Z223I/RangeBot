@@ -29,7 +29,7 @@ class RangeBot():
             print("ERROR: Lidar failed to initialize.")
 
         # This is the default clip distance.
-        self.clip_distance = 5
+        self.clip_distance = 10
 
     def set_clip_distance(self, distance):
         self.clip_distance = distance
@@ -56,16 +56,31 @@ class RangeBot():
                 # Give the servo extra time to get to the first angle.
                 time.sleep(1)
             else:
-                time.sleep(.25)
+                time.sleep(.15)
 
             # Read the lidar
-            range = self.lidar.read()
-            range = int(range * 10)
-            range = float(range) / 10.0
+            ranges_1 = []
+            for i in range(3):
+                ranges_1.append(self.lidar.read())
 
-            # Place angle and range in respective lists
+            ranges_2 = []
+            max_range = max(ranges_1)
+
+            for i in range(len(ranges_1)):
+                # Having a problem of spill over from highly reflective targets.
+                # They show up as short distances.
+                # Keep values that are close to each other.
+                if ranges_1[i] / max_range > .90:
+                    ranges_2.append(ranges_1[i])
+
+            range_avg = sum(ranges_2) / len(ranges_2)
+
+            range_avg = int(range_avg * 10)
+            range_avg = float(range_avg) / 10.0
+
+            # Place angle and range_avg in respective lists
             angles.append(current_angle)
-            ranges.append(range)
+            ranges.append(range_avg)
 
             # Increment current angle
             current_angle += step
@@ -171,6 +186,28 @@ class RangeBot():
 
         return target_location
 
+    def valid_hunt(self, ranges, hits):
+        """valid_hunt evaluates the ranges list and hits to determine if they represent a
+        valid hunt.
+
+        *** This may not get implemented.  Added code to scan to hopefully
+        deal with echoes from long range, highly reflective surfaces. ***
+
+
+        @type: float list
+        @param: ranges
+
+        @type: int
+        @param: hits
+        """
+
+        if hits < 5:
+            # The hunt/scan is automatically thrown out if this condition is met.
+            return False
+
+
+        return False
+
     def execute_hunt(self, est_tgt_r, target_width):
         """execute
 
@@ -180,10 +217,10 @@ class RangeBot():
         type: int
               target_width
 
-        rtype: float
+        rtype: float list
                target_angle (deg)
 
-        rtype: float
+        rtype: float list
                target_range (inches)
 
         rtype: int
@@ -205,7 +242,36 @@ class RangeBot():
 
         step_angle = scan_angle / total_steps
 
+
+
+
+
+
         angles, ranges = self.scan(-scan_half_angle, scan_half_angle, step_angle)
+        print("--->RangeBot.execute_hunt ranges: ", ranges)
+
+
+
+
+
+
+#        MIN_RANGE = 12
+#        if min(ranges) <= MIN_RANGE:
+#            # Throw out the bad range by setting it to max of ranges.
+#            max_of_ranges = max(ranges)
+#
+#            # Step through ranges and replace all the small numbers with max
+#            for index in range( len(ranges) ):
+#                if ranges[index] < MIN_RANGE:
+#                    ranges[index] = max_of_ranges
+
+#            print("--->RangeBot.execute_hunt ranges corrected: ", ranges)
+#            input("[Enter] to continue.")
+
+
+
+
+
 
         target_angle, target_range, target_hits = self.find_target2(angles, ranges)
 
