@@ -56,7 +56,7 @@ class RangeBot():
                 # Give the servo extra time to get to the first angle.
                 time.sleep(1)
             else:
-                time.sleep(.15)
+                time.sleep(.10)
 
             # Read the lidar
             ranges_1 = []
@@ -123,7 +123,7 @@ class RangeBot():
         return location
 
     def find_target2(self, angles, ranges):
-        "find_target2"
+        """find_target2"""
 
 #        print
 #        print(ranges)
@@ -143,7 +143,7 @@ class RangeBot():
         print(clipped_ranges)
 
         target_hits = clipped_ranges.count(target_marker)
-        print("Target hits: ", target_hits)
+#        print("Target hits: ", target_hits)
 
         target_center_index = None
         if target_hits > 0:
@@ -176,8 +176,8 @@ class RangeBot():
         """execute"""
 
         angles, ranges = self.scan(min_angle, max_angle, step)
-        print("Angles: ", angles)
-        print("Ranges: ", ranges)
+#        print("Angles: ", angles)
+#        print("Ranges: ", ranges)
 
         target_location = self.find_target(angles, ranges)
 #        print("Target location: ", target_location
@@ -227,7 +227,7 @@ class RangeBot():
                hits as a count
         """
 
-        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
+#        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
         # desired hits on target
         desired_hits = 7
         total_steps = desired_hits * 3.00
@@ -248,7 +248,7 @@ class RangeBot():
 
 
         angles, ranges = self.scan(-scan_half_angle, scan_half_angle, step_angle)
-        print("--->RangeBot.execute_hunt ranges: ", ranges)
+#        print("--->RangeBot.execute_hunt ranges: ", ranges)
 
 
 
