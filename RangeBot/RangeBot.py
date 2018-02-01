@@ -229,13 +229,31 @@ class RangeBot():
         """
 
 #        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
+
+        INCHES_PER_FOOT = 12
+        if est_tgt_r < 25 * INCHES_PER_FOOT:
+            # Short range
+            self.lidar.configure(LidarLite3Ext.SHORT_RANGE, LidarLite3Ext.ADDRESS)
+        elif est_tgt_r > 80 * INCHES_PER_FOOT:
+            # Maximum range
+            self.lidar.configure(LidarLite3Ext.MAXIMUM_RANGE, LidarLite3Ext.ADDRESS)
+        else:
+            # Default range
+            self.lidar.configure(LidarLite3Ext.DEFAULT_RANGE, LidarLite3Ext.ADDRESS)
+
         # desired hits on target
         desired_hits = 7
-        total_steps = desired_hits * 3.00
+
+        if est_tgt_r < 3 * INCHES_PER_FOOT:
+            scan_width = 1.0
+        else:
+            scan_width = 3.0
+
+        total_steps = desired_hits * scan_width
 
         angle_rads = math.atan(target_width / est_tgt_r)
 
-        scan_rads = angle_rads * 3
+        scan_rads = angle_rads * scan_width
 
         scan_angle = math.degrees(scan_rads)
 
