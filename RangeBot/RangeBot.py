@@ -1,9 +1,10 @@
 #!usr/bin/python
 
 import sys
-sys.path.append("/home/pi/pythondev/Lidar-Lite-3_Threaded")
+sys.path.append("/home/pi/pythondev/LidarLite3Ext/LidarLite3Ext")
 # print(sys.path)
-from LidarLiteChild import LidarLiteChild
+
+from LidarLite3Ext import LidarLite3Ext
 from Servo import Servo
 import time
 import math
@@ -20,10 +21,10 @@ class RangeBot():
     the target."""
 
     def __init__(self, servo_channel):
-        """ Create the Servo and LidarLiteChild objects."""
+        """ Create the Servo and LidarLite3Ext objects."""
 
         self.servo = Servo(servo_channel)
-        self.lidar = LidarLiteChild()
+        self.lidar = LidarLite3Ext()
         init_ok = self.lidar.init()
         if not init_ok:
             print("ERROR: Lidar failed to initialize.")
