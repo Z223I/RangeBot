@@ -1,0 +1,1 @@
+pylint -rn Servo.py
