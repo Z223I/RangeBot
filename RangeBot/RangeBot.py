@@ -136,6 +136,8 @@ class RangeBot():
 
                 ranges_1.append(current_range)
 
+
+
             ranges_2 = []
             max_range = max(ranges_1)
 
@@ -148,8 +150,7 @@ class RangeBot():
 
             range_avg = sum(ranges_2) / len(ranges_2)
 
-            range_avg = int(range_avg * 10)
-            range_avg = float(range_avg) / 10.0
+            range_avg = float("[:.2f]".format(range_avg))
 
             # Place angle and range_avg in respective lists
             angles.append(current_angle)
@@ -205,7 +206,7 @@ class RangeBot():
         @param ranges
 
         @rtype float list
-        @param xxxxxxxxxxxxxxxxxxxxxxxxxxx
+        @param clipped_ranges
 
         @rtype int
         @param hits"""
@@ -391,6 +392,14 @@ class RangeBot():
 
         angles, ranges = \
             self.scan2(est_tgt_r, -scan_half_angle, scan_half_angle, step_angle)
+
+
+
+
+
+
+
+
 #        print(ranges)
         logger.debug('RangeBot.execute_hunt() ranges: ', ranges)
 
