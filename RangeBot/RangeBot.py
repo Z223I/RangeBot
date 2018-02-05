@@ -10,6 +10,9 @@ import time
 import math
 
 #import pdb
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class RangeBot():
 
@@ -19,6 +22,8 @@ class RangeBot():
 
     Ultimately, this class has the azimuth and range of
     the target."""
+
+    INCHES_PER_FOOT = 12
 
     def __init__(self, servo_channel):
         """ Create the Servo and LidarLite3Ext objects."""
@@ -30,7 +35,17 @@ class RangeBot():
             print("ERROR: Lidar failed to initialize.")
 
         # This is the default clip distance.
-        self.clip_distance = 10
+        self.clip_distance = 6
+
+        # desired hits on target
+        self.DESIRED_HITS = 7
+
+        self.NARROW_SCAN_DISTANCE = 2
+        self.NARROW_SCAN = 1.0
+        self.NORMAL_SCAN = 3.0
+
+
+
 
     def set_clip_distance(self, distance):
         self.clip_distance = distance
@@ -63,6 +78,63 @@ class RangeBot():
             ranges_1 = []
             for i in range(3):
                 ranges_1.append(self.lidar.read())
+
+            ranges_2 = []
+            max_range = max(ranges_1)
+
+            for i in range(len(ranges_1)):
+                # Having a problem of spill over from highly reflective targets.
+                # They show up as short distances.
+                # Keep values that are close to each other.
+                if ranges_1[i] / max_range > .90:
+                    ranges_2.append(ranges_1[i])
+
+            range_avg = sum(ranges_2) / len(ranges_2)
+
+            range_avg = int(range_avg * 10)
+            range_avg = float(range_avg) / 10.0
+
+            # Place angle and range_avg in respective lists
+            angles.append(current_angle)
+            ranges.append(range_avg)
+
+            # Increment current angle
+            current_angle += step
+
+        return angles, ranges
+
+    def scan2(self, est_tgt_r, min_angle, max_angle, step):
+        """ The scan2 method uses the servo and Lidar to
+        return a list of angle and range pairs."""
+
+#        pdb.set_trace()
+        # Initialize the angle and range pairs list.
+        angles = []
+        ranges = []
+
+        current_angle = min_angle
+        while current_angle <= max_angle:
+            # print("Angle: ", current_angle)
+
+            # Position the servo
+            self.servo.set_angle(current_angle)
+
+            # Allow servo to finish its move
+            if current_angle == min_angle:
+                # Give the servo extra time to get to the first angle.
+                time.sleep(1)
+            else:
+                time.sleep(.10)
+
+            # Read the lidar
+            ranges_1 = []
+            for i in range(3):
+                current_range = 0
+                # This is dealing with the Lidar Lite spill over.
+                while current_range < .80 * est_tgt_r:
+                    current_range = self.lidar.read()
+
+                ranges_1.append(current_range)
 
             ranges_2 = []
             max_range = max(ranges_1)
@@ -123,30 +195,60 @@ class RangeBot():
 
         return location
 
-    def find_target2(self, angles, ranges):
-        """find_target2"""
+    def find_target2_helper(self, est_tgt_r, ranges):
+        """find_target2_helper
 
-#        print
-#        print(ranges)
-        
+        @type float
+        @param est_tgt_r
+
+        @type float list
+        @param ranges
+
+        @rtype float list
+        @param xxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+        @rtype int
+        @param hits"""
+
         minimum, index = min((ranges[i], i) for i in range(len(ranges)))
 
 #        print(minimum)
 
-        target_marker = 1
         clipped_ranges = []
+        target_marker = 1
         for i in range(len(ranges)):
             if ranges[i] < minimum + self.clip_distance:
                clipped_ranges.append(target_marker)
             else:
                clipped_ranges.append(0)
 
+        logger.debug('RangeBot.find_taget2_helper() Clipped ranges: ', \
+            clipped_ranges)
         print(clipped_ranges)
 
         target_hits = clipped_ranges.count(target_marker)
 #        print("Target hits: ", target_hits)
 
+        return clipped_ranges, target_hits
+
+    def find_target2(self, est_tgt_r, angles, ranges):
+        """find_target2"""
+
+#        print
+#        print(ranges)
+
+        clipped_ranges, target_hits = \
+            self.find_target2_helper(est_tgt_r, ranges)
+
+
+
+#
+# TODO: Fix this algorithm.  It assumes consecutive 1's.
+#
+
+
         target_center_index = None
+        target_marker = 1
         if target_hits > 0:
             mid_target = int(target_hits / 2)
 
@@ -160,6 +262,10 @@ class RangeBot():
             target_center_index = first_target_hit + mid_target
 
         # end if
+
+
+
+
 
         if target_center_index > -1:
             return_angle = angles[target_center_index]
@@ -187,27 +293,75 @@ class RangeBot():
 
         return target_location
 
-    def valid_hunt(self, ranges, hits):
-        """valid_hunt evaluates the ranges list and hits to determine if they represent a
-        valid hunt.
+    def valid_hunt(self, est_tgt_r, target_width):
+        """execute
 
-        *** This may not get implemented.  Added code to scan to hopefully
-        deal with echoes from long range, highly reflective surfaces. ***
+        type: float
+              est_tgt_r Estimated target range
 
+        type: int
+              target_width
 
-        @type: float list
-        @param: ranges
+        rtype: float list
+               target_angle (deg)
 
-        @type: int
-        @param: hits
+        rtype: float list
+               target_range (inches)
+
+        rtype: int
+               hits as a count
         """
 
-        if hits < 5:
-            # The hunt/scan is automatically thrown out if this condition is met.
-            return False
+#        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
+        pass
+
+    def scan_info(self, est_tgt_r, target_width):
+        """scan_info uses target range and width to determine the scan angle
+        to be used.
+
+        @type: float
+        @param: est_tgt_r Estimated target range
+
+        @type: int
+        @param: target_width
+
+        @rtype: float
+        @param: scan_half_angle (deg)
+
+        @rtype: float
+        @param: step_angle
+        """
+
+#        print("RangeBot:scan_info(", est_tgt_r, ", ", target_width, ")")
 
 
-        return False
+#        pdb.set_trace()
+        if est_tgt_r < 2 * RangeBot.INCHES_PER_FOOT:
+            # RangeBot is less than two feet from the target.  Cut the scan
+            #angle down so the scan is faster and we are NOT manuevering at
+            # this point anyways.  We only need to know when to stop.
+            scan_width = self.NARROW_SCAN
+        else:
+            scan_width = self.NORMAL_SCAN
+
+        angle_rads = math.atan(target_width / est_tgt_r)
+
+        scan_rads = angle_rads * scan_width
+
+        scan_angle = math.degrees(scan_rads)
+
+        scan_half_angle = scan_angle / 2.0
+
+        # Calculate the step angle.
+        total_steps = self.DESIRED_HITS * scan_width
+        step_angle = scan_angle / total_steps
+
+        return scan_half_angle, step_angle
+
+
+
+
+
 
     def execute_hunt(self, est_tgt_r, target_width):
         """execute
@@ -230,69 +384,18 @@ class RangeBot():
 
 #        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
 
-        INCHES_PER_FOOT = 12
-        if est_tgt_r < 25 * INCHES_PER_FOOT:
-            # Short range
-            self.lidar.configure(LidarLite3Ext.SHORT_RANGE, LidarLite3Ext.ADDRESS)
-        elif est_tgt_r > 80 * INCHES_PER_FOOT:
-            # Maximum range
-            self.lidar.configure(LidarLite3Ext.MAXIMUM_RANGE, LidarLite3Ext.ADDRESS)
-        else:
-            # Default range
-            self.lidar.configure(LidarLite3Ext.DEFAULT_RANGE, LidarLite3Ext.ADDRESS)
+        self.lidar.auto_configure(est_tgt_r)
 
-        # desired hits on target
-        desired_hits = 7
+        scan_half_angle, step_angle = \
+            self.scan_info(est_tgt_r, target_width)
 
-        if est_tgt_r < 3 * INCHES_PER_FOOT:
-            scan_width = 1.0
-        else:
-            scan_width = 3.0
+        angles, ranges = \
+            self.scan2(est_tgt_r, -scan_half_angle, scan_half_angle, step_angle)
+#        print(ranges)
+        logger.debug('RangeBot.execute_hunt() ranges: ', ranges)
 
-        total_steps = desired_hits * scan_width
-
-        angle_rads = math.atan(target_width / est_tgt_r)
-
-        scan_rads = angle_rads * scan_width
-
-        scan_angle = math.degrees(scan_rads)
-
-        scan_half_angle = scan_angle / 2.0
-
-        step_angle = scan_angle / total_steps
-
-
-
-
-
-
-        angles, ranges = self.scan(-scan_half_angle, scan_half_angle, step_angle)
-#        print("--->RangeBot.execute_hunt ranges: ", ranges)
-
-
-
-
-
-
-#        MIN_RANGE = 12
-#        if min(ranges) <= MIN_RANGE:
-#            # Throw out the bad range by setting it to max of ranges.
-#            max_of_ranges = max(ranges)
-#
-#            # Step through ranges and replace all the small numbers with max
-#            for index in range( len(ranges) ):
-#                if ranges[index] < MIN_RANGE:
-#                    ranges[index] = max_of_ranges
-
-#            print("--->RangeBot.execute_hunt ranges corrected: ", ranges)
-#            input("[Enter] to continue.")
-
-
-
-
-
-
-        target_angle, target_range, target_hits = self.find_target2(angles, ranges)
+        target_angle, target_range, target_hits = \
+            self.find_target2(est_tgt_r, angles, ranges)
 
         return target_angle, target_range, target_hits
 

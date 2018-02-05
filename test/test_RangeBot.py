@@ -60,6 +60,31 @@ class TestRangeBot(unittest.TestCase):
         valid = self.test_range_bot.valid_hunt(ranges, hits)
         self.assertFalse(valid)
 
+    def test_scan_info(self):
+        # Use a 3, 4, 5 (36.87 degrees) right angle for testing.
+        est_tgt_r = 4 * RangeBot.INCHES_PER_FOOT
+        target_width = 3 * RangeBot.INCHES_PER_FOOT
+
+        total_hits = self.test_range_bot.NORMAL_SCAN * \
+                     self.test_range_bot.DESIRED_HITS
+
+        total_scan_angle = 36.87 * self.test_range_bot.NORMAL_SCAN
+        HALF_ANGLE = total_scan_angle / 2.0
+
+        STEP_ANGLE = total_scan_angle / total_hits
+
+        scan_half_angle, step_angle = \
+            self.test_range_bot.scan_info(est_tgt_r, target_width)
+        
+        scan_half_angle = "[:.3f]".format(scan_half_angle)
+        HALF_ANGLE = "[:.3f]".format(HALF_ANGLE)
+        self.assertEqual(scan_half_angle, HALF_ANGLE)
+
+
+        step_angle = "[:.3f]".format(step_angle)
+        STEP_ANGLE = "[:.3f]".format(STEP_ANGLE)
+        self.assertEqual(step_angle, STEP_ANGLE)
+
     def test_execute_hunt(self):
         pass
 
