@@ -3,10 +3,9 @@ try:
 except ImportError:
     pass
 
-#import warnings
-
-#from unittest import TestCase  #, skipIf
 import unittest
+from unittest.mock import patch
+
 import time
 
 import sys
@@ -32,6 +31,15 @@ class TestRangeBot(unittest.TestCase):
 
     def test_scan(self):
         pass
+
+    @patch('Lidar_Lite.read')
+    def test_scan2(self):
+        est_tgt_r = 30
+        half_angle = 5
+        min_angle = -half_angle
+        max_angle = half_angle
+        step = 2 * half_angle / 10
+        self.test_range_bot.scan2(est_tgt_r, min_angle, max_angle, step)
 
     def test_find_target2(self):
         pass

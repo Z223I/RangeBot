@@ -52,8 +52,24 @@ class RangeBot():
 
 
     def scan(self, min_angle, max_angle, step):
-        """ The scan method uses the servo and Lidar to
-        return a list of angle and range pairs."""
+        """ The scan2 method uses the servo and Lidar to return a list of
+        angle and range pairs.
+
+        @type: float
+        @param: min_angle
+
+        @type: float
+        @param: max_angle
+
+        @type: float
+        @param: step (size of step.  not step count)
+
+        @rtype: float list
+        @param: angles
+
+        @rtype: float list
+        @param: ranges
+        """
 
 #        pdb.set_trace()
         # Initialize the angle and range pairs list.
@@ -104,8 +120,31 @@ class RangeBot():
         return angles, ranges
 
     def scan2(self, est_tgt_r, min_angle, max_angle, step):
-        """ The scan2 method uses the servo and Lidar to
-        return a list of angle and range pairs."""
+        """ The scan2 method uses the servo and Lidar to return a list of
+        angle and range pairs.
+
+        Scan2 is different from scan in that it attempts to remove shorter
+        distances that are spill over from the previous scan of the Lidar
+        Lite v3.
+
+        @type: float
+        @param: est_tgt_r
+
+        @type: float
+        @param: min_angle
+
+        @type: float
+        @param: max_angle
+
+        @type: float
+        @param: step (size of step.  not step count)
+
+        @rtype: float list
+        @param: angles
+
+        @rtype: float list
+        @param: ranges
+        """
 
 #        pdb.set_trace()
         # Initialize the angle and range pairs list.
@@ -149,8 +188,8 @@ class RangeBot():
                     ranges_2.append(ranges_1[i])
 
             range_avg = sum(ranges_2) / len(ranges_2)
-
-            range_avg = float("[:.2f]".format(range_avg))
+            range_avg = '{:.2f}'.format(range_avg)
+            range_avg = float(range_avg)
 
             # Place angle and range_avg in respective lists
             angles.append(current_angle)
@@ -218,7 +257,7 @@ class RangeBot():
         clipped_ranges = []
         target_marker = 1
         for i in range(len(ranges)):
-            if ranges[i] < minimum + self.clip_distance:
+            if ranges[i] < int(minimum) + int(self.clip_distance):
                clipped_ranges.append(target_marker)
             else:
                clipped_ranges.append(0)
