@@ -32,8 +32,10 @@ class TestRangeBot(unittest.TestCase):
     def test_scan(self):
         pass
 
+    # TODO Need to patch time.sleep
+    @patch('RangeBot.time.sleep')
     @patch('RangeBot.LidarLite3Ext.read')
-    def test_scan2(self, mock_read):
+    def test_scan2(self, mock_read, mock_sleep):
         mock_read.return_value = 80
 
         est_tgt_r = 30
@@ -139,26 +141,27 @@ class TestRangeBot(unittest.TestCase):
     def test_execute(self):
         pass
 
-    def test_valid_hunt_A(self):
-        hits = 7
-        ranges = [100,100,100,100,100,100,100, \
-            24, 24, 24, 24, 24, 24, 24, \
-            100,100,100,100,100,100,100]
+# valid_hunt isn't currently used or written.
+#    def test_valid_hunt_A(self):
+#        hits = 7
+#        ranges = [100,100,100,100,100,100,100, \
+#            24, 24, 24, 24, 24, 24, 24, \
+#            100,100,100,100,100,100,100]
+#
+#        valid = self.test_range_bot.valid_hunt(ranges, hits)
+#        self.assertTrue(valid)
 
-        valid = self.test_range_bot.valid_hunt(ranges, hits)
-        self.assertTrue(valid)
-
-    def test_valid_hunt_B(self):
-        # Four hits is below the threshold for a valid hunt.
-        hits = 4
-
-        # The values of ranges is irrelavent.
-        ranges = [100,100,100,100,100,100,100, \
-            24, 24, 24, 24, 24, 24, 24, \
-            100,100,100,100,100,100,100]
-
-        valid = self.test_range_bot.valid_hunt(ranges, hits)
-        self.assertFalse(valid)
+#    def test_valid_hunt_B(self):
+#        # Four hits is below the threshold for a valid hunt.
+#        hits = 4
+#
+#        # The values of ranges is irrelavent.
+#        ranges = [100,100,100,100,100,100,100, \
+#            24, 24, 24, 24, 24, 24, 24, \
+#            100,100,100,100,100,100,100]
+#
+#        valid = self.test_range_bot.valid_hunt(ranges, hits)
+#        self.assertFalse(valid)
 
     def test_scan_info(self):
         # Use a 3, 4, 5 (36.87 degrees) right angle for testing.

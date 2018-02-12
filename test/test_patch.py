@@ -21,8 +21,9 @@ class TestRangeBot(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @patch('RangeBot.time.sleep')
     @patch('RangeBot.LidarLite3Ext.read')
-    def test_scan2(self, mock_read):
+    def test_scan2(self, mock_read, mock_sleep):
         mock_read.return_value = 80
 
         est_tgt_r = 30

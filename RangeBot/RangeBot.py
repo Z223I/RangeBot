@@ -354,7 +354,7 @@ class RangeBot():
         """
 
 #        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
-        pass
+        return False
 
     def scan_info(self, est_tgt_r, target_width):
         """scan_info uses target range and width to determine the scan angle
