@@ -22,7 +22,7 @@ class TestRangeBot(unittest.TestCase):
         pass
 
     def test___init___(self):
-        self.assertEqual(self.test_range_bot.clip_distance, 10)
+        self.assertEqual(self.test_range_bot.clip_distance, 6)
 
     def test_set_clip_distance(self):
         val = 6
@@ -32,7 +32,7 @@ class TestRangeBot(unittest.TestCase):
     def test_scan(self):
         pass
 
-    @patch('Lidar_Lite.read')
+    @patch('LidarLite3Ext.LidarLite3Ext.read')
     def test_scan2(self):
         est_tgt_r = 30
         half_angle = 5
@@ -40,6 +40,89 @@ class TestRangeBot(unittest.TestCase):
         max_angle = half_angle
         step = 2 * half_angle / 10
         self.test_range_bot.scan2(est_tgt_r, min_angle, max_angle, step)
+
+    def test_find_target2_helper_A(self):
+        # Estimated target range.
+        est_tgt_r = 60
+        ranges = [99, 99, 99, 99, 99, 99, 99, \
+                  60, 60, 60, 60, 60, 60, 60, \
+                  99, 99, 99, 99, 99, 99, 99]
+
+        clipped_ranges, tgt_hits = \
+            self.test_range_bot.find_target2_helper(est_tgt_r, ranges)
+
+        clipped_ranges_check = [0, 0, 0, 0, 0, 0, 0, \
+                                1, 1, 1, 1, 1, 1, 1, \
+                                0, 0, 0, 0, 0, 0, 0]
+
+        tgt_hits_check = 7
+
+        self.assertEqual(clipped_ranges, clipped_ranges_check)
+        self.assertEqual(tgt_hits, tgt_hits_check)
+
+
+    def test_find_target2_helper_B(self):
+        """test_find_target2_helper_B verifies that a small variation in the
+        target range is ok."""
+
+        # Estimated target range.
+        est_tgt_r = 60
+        ranges = [99, 99, 99, 99, 99, 99, 99, \
+                  60, 61, 62, 63, 62, 61, 61, \
+                  99, 99, 99, 99, 99, 99, 99]
+
+        clipped_ranges, tgt_hits = \
+            self.test_range_bot.find_target2_helper(est_tgt_r, ranges)
+
+        clipped_ranges_check = [0, 0, 0, 0, 0, 0, 0, \
+                                1, 1, 1, 1, 1, 1, 1, \
+                                0, 0, 0, 0, 0, 0, 0]
+
+        tgt_hits_check = 7
+
+        self.assertEqual(clipped_ranges, clipped_ranges_check)
+        self.assertEqual(tgt_hits, tgt_hits_check)
+
+    def test_find_target2_helper_C(self):
+        """test_find_target2_helper_C checks to see if close range targets
+        properly get ignored."""
+
+        # Estimated target range.
+        est_tgt_r = 60
+        ranges = [33, 33, 99, 99, 99, 99, 99, \
+                  60, 60, 60, 60, 60, 60, 60, \
+                  99, 99, 99, 99, 99, 99, 99]
+
+        clipped_ranges, tgt_hits = \
+            self.test_range_bot.find_target2_helper(est_tgt_r, ranges)
+
+        clipped_ranges_check = [0, 0, 0, 0, 0, 0, 0, \
+                                1, 1, 1, 1, 1, 1, 1, \
+                                0, 0, 0, 0, 0, 0, 0]
+
+        tgt_hits_check = 7
+
+        self.assertEqual(clipped_ranges, clipped_ranges_check)
+        self.assertEqual(tgt_hits, tgt_hits_check)
+
+    def test_find_target2_helper_C(self):
+        # Estimated target range.
+        est_tgt_r = 60
+        ranges = [99, 99, 99, 99, 99, 99, 99, \
+                  60, 60, 60, 60, 60, 60, 60, \
+                  99, 99, 99, 99, 99, 99, 99]
+
+        clipped_ranges, tgt_hits = \
+            self.test_range_bot.find_target2_helper(est_tgt_r, ranges)
+
+        clipped_ranges_check = [0, 0, 0, 0, 0, 0, 0, \
+                                1, 1, 1, 1, 1, 1, 1, \
+                                0, 0, 0, 0, 0, 0, 0]
+
+        tgt_hits_check = 7
+
+        self.assertEqual(clipped_ranges, clipped_ranges_check)
+        self.assertEqual(tgt_hits, tgt_hits_check)
 
     def test_find_target2(self):
         pass
