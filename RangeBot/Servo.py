@@ -93,7 +93,7 @@ class Servo:
         Set the attribule angle.
         """
         # Adjust for slight error in servo.
-        _angle += 9
+        _angle += 6
 
         if _angle < self.ANGLE_MIN:
             _angle = self.ANGLE_MIN
@@ -163,9 +163,9 @@ if __name__ == "__main__":
 
     SERVO.center()
 
-#    while True:
-#        SERVO.test()
-#        time.sleep(1.5)
+    while True:
+        SERVO.test()
+        time.sleep(1.5)
 
-#        SERVO.test2()
-#        time.sleep(3)
+        SERVO.test2()
+        time.sleep(3)

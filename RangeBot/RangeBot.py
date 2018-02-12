@@ -170,7 +170,7 @@ class RangeBot():
             for i in range(3):
                 current_range = 0
                 # This is dealing with the Lidar Lite spill over.
-                while current_range < .80 * est_tgt_r:
+                while current_range < .90 * est_tgt_r:
                     current_range = self.lidar.read()
 
                 ranges_1.append(current_range)
@@ -236,7 +236,8 @@ class RangeBot():
         return location
 
     def find_target2_helper(self, est_tgt_r, ranges):
-        """find_target2_helper
+        """find_target2_helper uses an estimated target range and a list of
+        ranges to find the target.
 
         @type float
         @param est_tgt_r
@@ -469,7 +470,7 @@ if __name__ == "__main__":
         target_width = input("Target width: ")
         target_width = int(target_width)
     else:
-        target_range = 20
+        target_range = 30
         target_width = 3
 
     range_bot.execute_hunt(target_range, target_width)
