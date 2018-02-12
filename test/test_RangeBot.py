@@ -32,14 +32,25 @@ class TestRangeBot(unittest.TestCase):
     def test_scan(self):
         pass
 
-    @patch('LidarLite3Ext.LidarLite3Ext.read')
-    def test_scan2(self):
+    @patch('RangeBot.LidarLite3Ext.read')
+    def test_scan2(self, mock_read):
+        mock_read.return_value = 80
+
         est_tgt_r = 30
         half_angle = 5
         min_angle = -half_angle
         max_angle = half_angle
         step = 2 * half_angle / 10
-        self.test_range_bot.scan2(est_tgt_r, min_angle, max_angle, step)
+        angles, ranges = \
+            self.test_range_bot.scan2(est_tgt_r, min_angle, max_angle, step)
+#        print(ranges)
+#        print(angles)
+
+        angles_check = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+        ranges_check = [80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80]
+
+        self.assertEqual(angles, angles_check)
+        self.assertEqual(ranges, ranges_check)
 
     def test_find_target2_helper_A(self):
         # Estimated target range.
@@ -185,3 +196,12 @@ class TestRangeBot(unittest.TestCase):
 if __name__ == "__main__":
 
     unittest.main()
+
+
+
+
+
+
+
+
+
