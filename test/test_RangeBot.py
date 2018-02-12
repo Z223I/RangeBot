@@ -43,8 +43,6 @@ class TestRangeBot(unittest.TestCase):
         step = 2 * half_angle / 10
         angles, ranges = \
             self.test_range_bot.scan2(est_tgt_r, min_angle, max_angle, step)
-#        print(ranges)
-#        print(angles)
 
         angles_check = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
         ranges_check = [80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80]
