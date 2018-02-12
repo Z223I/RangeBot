@@ -183,7 +183,8 @@ class RangeBot():
             for i in range(len(ranges_1)):
                 # Having a problem of spill over from highly reflective targets.
                 # They show up as short distances.
-                # Keep values that are close to each other.
+                # Keep values that are 90 percent of the expect range or
+                # higher.
                 if ranges_1[i] / max_range > .90:
                     ranges_2.append(ranges_1[i])
 
