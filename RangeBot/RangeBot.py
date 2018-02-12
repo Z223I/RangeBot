@@ -1,5 +1,11 @@
 #!usr/bin/python
 
+# DreamPie
+# J
+# Komodo Edit
+# SPE <-- **
+
+
 import sys
 sys.path.append("/home/pi/pythondev/LidarLite3Ext/LidarLite3Ext")
 # print(sys.path)
@@ -9,10 +15,16 @@ from Servo import Servo
 import time
 import math
 
-#import pdb
+import pdb
 import logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+hdlr = logging.FileHandler('RangeBot.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.INFO)
+
+
 
 class RangeBot():
 
@@ -274,10 +286,27 @@ class RangeBot():
         return clipped_ranges, target_hits
 
     def find_target2(self, est_tgt_r, angles, ranges):
-        """find_target2"""
-
-#        print
-#        print(ranges)
+        """find_target2 finds a target in a supplied list of
+        ranges.  It returns the angle to the center of the taget, it's range
+        and the number of hits on the target.
+        
+        @type: float
+        @param: est_tgt_r
+        
+        @type: float list
+        @param: angles
+        
+        @type: float list
+        @param: ranges
+        
+        @rtype: float
+        @param: angle
+        
+        @rtype: float
+        @param: range
+        
+        @rtype: int
+        @param: hits"""
 
         clipped_ranges, target_hits = \
             self.find_target2_helper(est_tgt_r, ranges)
@@ -299,6 +328,7 @@ class RangeBot():
                 if clipped_ranges[i] == target_marker:
                     first_target_hit = i
                     break
+                # end if
             # end for
             # Calculate center of target
             target_center_index = first_target_hit + mid_target
@@ -322,7 +352,8 @@ class RangeBot():
 
 
     def execute(self, min_angle, max_angle, step):
-        """execute"""
+        """execute 
+        Don't think this method is being used."""
 
         angles, ranges = self.scan(min_angle, max_angle, step)
 #        print("Angles: ", angles)
@@ -336,7 +367,8 @@ class RangeBot():
         return target_location
 
     def valid_hunt(self, est_tgt_r, target_width):
-        """execute
+        """valid_hunt
+        Don't think this is being used.
 
         type: float
               est_tgt_r Estimated target range
@@ -406,7 +438,7 @@ class RangeBot():
 
 
     def execute_hunt(self, est_tgt_r, target_width):
-        """execute
+        """execute_hunt
 
         type: float
               est_tgt_r Estimated target range
@@ -423,6 +455,9 @@ class RangeBot():
         rtype: int
                hits as a count
         """
+        
+        logging.info('RangeBot:execute_hunt')
+        logging.debug('RangeBot:execute_hunt({:.2f}, {:d}).format(est_tgt_r, target_width)')
 
 #        print("RangeBot:execute_hunt(", est_tgt_r, ", ", target_width, ")")
 
@@ -452,6 +487,7 @@ class RangeBot():
 
 if __name__ == "__main__":
     range_bot = RangeBot(3)
+    logger.info('RangeBot main initialized RangeBot')
 
 #    min_angle = -10
 #    max_angle = 10
@@ -460,6 +496,7 @@ if __name__ == "__main__":
 #    target_location = range_bot.execute(min_angle, max_angle, step)
 #    print(target_location)
 
+    #pdb.set_trace()
     # The units of measurement do not matter.  We are getting a ratio to
     # calculate the atan.
     USE_INPUT = False
@@ -471,7 +508,7 @@ if __name__ == "__main__":
         target_width = input("Target width: ")
         target_width = int(target_width)
     else:
-        target_range = 30
+        target_range = 12
         target_width = 3
 
     range_bot.execute_hunt(target_range, target_width)
