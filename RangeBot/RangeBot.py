@@ -193,7 +193,7 @@ class RangeBot():
                     logger.warning('Bad read. Estimate:  {}, measured:  {:.2f}'.format(est_tgt_r, current_range))
                     time.sleep(.1)
 
-                    allowable_misreads = 3
+                    allowable_misreads = 6
                     if misread == allowable_misreads:
                         # Set current_range to a number larger than maximum
                         # range.
@@ -299,8 +299,7 @@ class RangeBot():
             else:
                clipped_ranges.append(0)
 
-        logger.debug('RangeBot.find_taget2_helper() Clipped ranges: ', \
-            clipped_ranges)
+        logger.debug('RangeBot.find_taget2_helper() Clipped ranges: {}'.format(clipped_ranges))
         print(clipped_ranges)
 
         target_hits = clipped_ranges.count(target_marker)
@@ -536,7 +535,7 @@ class RangeBot():
 
 
 #        print(ranges)
-        logger.debug('RangeBot.execute_hunt() ranges: ', ranges)
+        logger.debug('RangeBot.execute_hunt() ranges: {}'.format(ranges))
 
 
 
