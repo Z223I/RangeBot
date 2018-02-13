@@ -233,6 +233,24 @@ class TestRangeBot(unittest.TestCase):
         STEP_ANGLE = "[:.3f]".format(STEP_ANGLE)
         self.assertEqual(step_angle, STEP_ANGLE)
 
+    def test_range_reasonable_A(self):
+        estimated_range = 40
+        measured_range = 42
+        
+        reasonable = self.testRangeBot.range_reasonable( estimated_range, 
+                                                          measured_range )
+
+        self.assertTrue(reasonable)
+
+    def test_range_reasonable_B(self):
+        estimated_range = 40
+        measured_range = 80
+        
+        reasonable = self.testRangeBot.range_reasonable( estimated_range, 
+                                                          measured_range )
+
+        self.assertFalse(reasonable)
+
     def test_execute_hunt(self):
         """execute_hunt isn't being tested.  It is just a series of three
         calls.  Each called method is being tested.

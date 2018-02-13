@@ -22,7 +22,7 @@ hdlr = logging.FileHandler('RangeBot.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.WARNING)
 
 
 
@@ -47,7 +47,7 @@ class RangeBot():
             print("ERROR: Lidar failed to initialize.")
 
         # This is the default clip distance.
-        self.clip_distance = 6
+        self.clip_distance = 10
 
         # desired hits on target
         self.DESIRED_HITS = 7
@@ -136,7 +136,7 @@ class RangeBot():
         angle and range pairs.
 
         Scan2 is different from scan in that it attempts to remove shorter
-        distances that are spill over from the previous scan of the Lidar
+        distances that are spill over from the previous read of the Lidar
         Lite v3.
 
         @type: float
@@ -180,16 +180,28 @@ class RangeBot():
             # Read the lidar
             ranges_1 = []
             for i in range(3):
-                current_range = 0
                 # This is dealing with the Lidar Lite spill over.
-                misread = -1 # Yes.  Minus one.
-                while current_range < .90 * est_tgt_r:
+                misread = 0
+                min_error = 10
+                allowable = .20 * est_tgt_r
+                allowable = max(min_error, allowable)
+                current_range = est_tgt_r
+                
+                while current_range < est_tgt_r - allowable:
                     current_range = self.lidar.read()
                     misread += 1
-                    if misread == 3:
-                        # Set current_range to a number larger than maximum range.
-                        logger.error('RangeBot.scan2 had three consecutive bad reads.')
+                    logger.warning('Bad read. Estimate:  {}, measured:  {:.2f}'.format(est_tgt_r, current_range))
+                    time.sleep(.1)
+
+                    allowable_misreads = 3
+                    if misread == allowable_misreads:
+                        # Set current_range to a number larger than maximum
+                        # range.
+                        logger.error( \
+                            'RangeBot.scan2 had {} consecutive bad reads.'. \
+                            format(allowable_misreads))
                         current_range = LidarLite3Ext.MAX_TGT_RANGE_IN
+
 #                    print('RangeBot.scan2 current_range: {:.2f}'.format(current_range))
 
                 ranges_1.append(current_range)
@@ -446,8 +458,38 @@ class RangeBot():
 
 
 
+    # TODO Write tests and finish this.
+    def range_reasonable(self, estimate, measured):
+        """ range_reasonable checks to see if the target measured range is
+        within ten percent of the estimate.
+        
+        Normally, RangeBot is always moving towards the target.  However,
+        on start-up the estimate is only an estimate.  It could be closer
+        than the measured amount.
 
-
+        @type: float
+        @param: estimate
+        
+        @type: float
+        @param: measured
+        
+        @rtype: boolean
+        @rparam: reasonable
+        """
+        
+        allowable = .10 * estimate
+        
+        minimum_delta = 10
+        
+        allowable = max(allowable, minimum_delta)
+        
+        if measured < estimate - allowable:
+            return False
+        
+        if measured > estimate + allowable:
+            return False
+                
+        return True
 
     def execute_hunt(self, est_tgt_r, target_width):
         """execute_hunt
@@ -477,6 +519,9 @@ class RangeBot():
 
         scan_half_angle, step_angle = \
             self.scan_info(est_tgt_r, target_width)
+            
+            
+            
 
         angles, ranges = \
             self.scan2(est_tgt_r, -scan_half_angle, scan_half_angle, step_angle)
@@ -491,8 +536,27 @@ class RangeBot():
 #        print(ranges)
         logger.debug('RangeBot.execute_hunt() ranges: ', ranges)
 
+
+
+        # TODO: Having some problems with the Lidar seeing highly reflective
+        # targets.  This causes problems with the readings.
+        #target_range = est_tgt_r
+        #attemps = 0
+        #while range_reasonable(est_tgt_r, target_range)
         target_angle, target_range, target_hits = \
             self.find_target2(est_tgt_r, angles, ranges)
+        #attemps += 1
+        #if attemps > e
+        #keep current attempt
+            
+        if not self.range_reasonable(est_tgt_r, target_range):
+            logger.error('RangeBot.execute_hunt() unreasonble target range.')
+            logger.error('execute_hunt() estimate, measured {:.2f}, {:.2f}'.format( \
+                est_tgt_r, target_range))
+            logger.error('execute_hunt() ranges {}'.format(ranges))
+            
+            
+            
 
         return target_angle, target_range, target_hits
 
