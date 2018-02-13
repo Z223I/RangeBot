@@ -22,7 +22,7 @@ hdlr = logging.FileHandler('RangeBot.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 
 
@@ -182,8 +182,15 @@ class RangeBot():
             for i in range(3):
                 current_range = 0
                 # This is dealing with the Lidar Lite spill over.
+                misread = -1 # Yes.  Minus one.
                 while current_range < .90 * est_tgt_r:
                     current_range = self.lidar.read()
+                    misread += 1
+                    if misread == 3:
+                        # Set current_range to a number larger than maximum range.
+                        logger.error('RangeBot.scan2 had three consecutive bad reads.')
+                        current_range = LidarLite3Ext.MAX_TGT_RANGE_IN
+#                    print('RangeBot.scan2 current_range: {:.2f}'.format(current_range))
 
                 ranges_1.append(current_range)
 
@@ -264,6 +271,8 @@ class RangeBot():
         @rtype int
         @param hits"""
 
+        
+
         minimum, index = min((ranges[i], i) for i in range(len(ranges)))
 
 #        print(minimum)
@@ -308,6 +317,8 @@ class RangeBot():
         @rtype: int
         @param: hits"""
 
+        logging.info('RangeBot:find_target2 Entered')
+        
         clipped_ranges, target_hits = \
             self.find_target2_helper(est_tgt_r, ranges)
 
@@ -348,6 +359,7 @@ class RangeBot():
         # end else
 
         print("Target angle and range: {:.2f}, {:.1f}".format(return_angle, return_range))
+        logging.info('RangeBot:find_target2 Leaving')
         return return_angle, return_range, target_hits
 
 
@@ -511,6 +523,7 @@ if __name__ == "__main__":
         target_range = 12
         target_width = 3
 
+#    pdb.set_trace()
     range_bot.execute_hunt(target_range, target_width)
 
     print("Bye!")

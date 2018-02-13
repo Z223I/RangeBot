@@ -11,6 +11,8 @@ import time
 import sys
 sys.path.append('/home/pi/pythondev/RangeBot/RangeBot')
 from RangeBot import RangeBot
+sys.path.append('/home/pi/pythondev/LidarLite3Ext/LidarLite3Ext')
+from LidarLite3Ext import LidarLite3Ext
 
 class TestRangeBot(unittest.TestCase):
     CHANNEL = 4
@@ -34,7 +36,7 @@ class TestRangeBot(unittest.TestCase):
 
     @patch('RangeBot.time.sleep')
     @patch('RangeBot.LidarLite3Ext.read')
-    def test_scan2(self, mock_read, mock_sleep):
+    def test_scan2_A(self, mock_read, mock_sleep):
         mock_read.return_value = 80
 
         est_tgt_r = 30
@@ -47,6 +49,31 @@ class TestRangeBot(unittest.TestCase):
 
         angles_check = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
         ranges_check = [80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80]
+
+        self.assertEqual(angles, angles_check)
+        self.assertEqual(ranges, ranges_check)
+
+    @patch('RangeBot.time.sleep')
+    @patch('RangeBot.LidarLite3Ext.read')
+    def test_scan2_B(self, mock_read, mock_sleep):
+        mock_read.return_value = 1
+
+        est_tgt_r = 30
+        half_angle = 5
+        min_angle = -half_angle
+        max_angle = half_angle
+        step = 2 * half_angle / 10
+        angles, ranges = \
+            self.testRangeBot.scan2(est_tgt_r, min_angle, max_angle, step)
+
+        # Maximum Range
+#        m = LidarLite3Ext.MAX_TGT_RANGE_IN
+#        m = '{:.1}'.format(m)
+#        m = float(m)
+        m = 1574.8
+        angles_check = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+#        ranges_check = [m, m, 80, 80, 80, 80, 80, 80, 80, 80, 80]
+        ranges_check = [m, m, m, m, m, m, m, m, m, m, m]
 
         self.assertEqual(angles, angles_check)
         self.assertEqual(ranges, ranges_check)
