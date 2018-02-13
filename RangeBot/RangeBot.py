@@ -185,10 +185,10 @@ class RangeBot():
                 min_error = 10
                 allowable = .20 * est_tgt_r
                 allowable = max(min_error, allowable)
-                current_range = est_tgt_r
                 
-                while current_range < est_tgt_r - allowable:
-                    current_range = self.lidar.read()
+                current_range = self.lidar.read()
+                
+                while current_range <= est_tgt_r - allowable:
                     misread += 1
                     logger.warning('Bad read. Estimate:  {}, measured:  {:.2f}'.format(est_tgt_r, current_range))
                     time.sleep(.1)
@@ -201,6 +201,7 @@ class RangeBot():
                             'RangeBot.scan2 had {} consecutive bad reads.'. \
                             format(allowable_misreads))
                         current_range = LidarLite3Ext.MAX_TGT_RANGE_IN
+                    current_range = self.lidar.read()
 
 #                    print('RangeBot.scan2 current_range: {:.2f}'.format(current_range))
 
@@ -230,6 +231,7 @@ class RangeBot():
             # Increment current angle
             current_angle += step
 
+        logger.debug('ranges: {}'.format(ranges))
         return angles, ranges
 
     def find_target(self, angles, ranges):
