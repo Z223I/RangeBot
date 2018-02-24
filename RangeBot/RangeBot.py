@@ -187,8 +187,10 @@ class RangeBot():
                 allowable = max(min_error, allowable)
                 
                 current_range = self.lidar.read()
+                min_range = 1.0
                 
-                while current_range <= est_tgt_r - allowable:
+                #while current_range <= est_tgt_r - allowable:
+                while current_range < min_range:
                     misread += 1
                     logger.warning('Bad read. Estimate:  {}, measured:  {:.2f}'.format(est_tgt_r, current_range))
                     time.sleep(.1)
@@ -550,12 +552,13 @@ class RangeBot():
         #if attemps > e
         #keep current attempt
             
+        """
         if not self.range_reasonable(est_tgt_r, target_range):
             logger.error('RangeBot.execute_hunt() unreasonble target range.')
             logger.error('execute_hunt() estimate, measured {:.2f}, {:.2f}'.format( \
                 est_tgt_r, target_range))
             logger.error('execute_hunt() ranges {}'.format(ranges))
-            
+        """
             
             
 
@@ -576,8 +579,8 @@ if __name__ == "__main__":
     #pdb.set_trace()
     # The units of measurement do not matter.  We are getting a ratio to
     # calculate the atan.
-    USE_INPUT = False
-
+    USE_INPUT = True
+    
     if USE_INPUT:
         target_range = input("Target range: ")
         target_range = int(target_range)
@@ -585,10 +588,11 @@ if __name__ == "__main__":
         target_width = input("Target width: ")
         target_width = int(target_width)
     else:
-        target_range = 12
+        target_range = 30
         target_width = 3
 
+    while True:
 #    pdb.set_trace()
-    range_bot.execute_hunt(target_range, target_width)
+        range_bot.execute_hunt(target_range, target_width)
 
     print("Bye!")
