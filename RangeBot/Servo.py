@@ -93,7 +93,8 @@ class Servo:
         Set the attribule angle.
         """
         # Adjust for slight error in servo.
-        _angle += 6
+        #_angle += 6
+        _angle += 6.2
 
         if _angle < self.ANGLE_MIN:
             _angle = self.ANGLE_MIN
