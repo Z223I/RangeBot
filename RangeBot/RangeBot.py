@@ -173,7 +173,8 @@ class RangeBot():
             # Allow servo to finish its move
             if current_angle == min_angle:
                 # Give the servo extra time to get to the first angle.
-                time.sleep(1)
+#                time.sleep(1)
+                time.sleep(.5)
             else:
                 time.sleep(.10)
 
@@ -193,7 +194,7 @@ class RangeBot():
                 while current_range < min_range:
                     misread += 1
                     logger.warning('Bad read. Estimate:  {}, measured:  {:.2f}'.format(est_tgt_r, current_range))
-                    time.sleep(.1)
+                    time.sleep(.05)
 
                     allowable_misreads = 6
                     if misread == allowable_misreads:
