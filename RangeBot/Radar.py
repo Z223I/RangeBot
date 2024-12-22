@@ -46,22 +46,6 @@ class Radar():
         if not init_ok:
             print("ERROR: Lidar failed to initialize.")
 
-        # This is the default clip distance.
-        self.clip_distance = 10
-
-        # desired hits on target
-        self.DESIRED_HITS = 7
-
-        self.NARROW_SCAN_DISTANCE = 2
-        self.NARROW_SCAN = 1.0
-        self.NORMAL_SCAN = 3.0
-
-
-
-
-    def set_clip_distance(self, distance):
-        self.clip_distance = distance
-
 
     def scan(self, min_angle, max_angle, step):
         """ The scan2 method uses the servo and Lidar to return a list of
@@ -83,7 +67,7 @@ class Radar():
         @param: ranges
         """
 
-#        pdb.set_trace()
+        # pdb.set_trace()
         # Initialize the angle and range pairs list.
         angles = []
         ranges = []
@@ -136,30 +120,8 @@ if __name__ == "__main__":
     range_bot = Radar(3)
     logger.info('Radar main initialized Radar')
 
-#    min_angle = -10
-#    max_angle = 10
-#    step = 1
-
-#    target_location = range_bot.execute(min_angle, max_angle, step)
-#    print(target_location)
-
-    #pdb.set_trace()
-    # The units of measurement do not matter.  We are getting a ratio to
-    # calculate the atan.
-    USE_INPUT = True
-
-    if USE_INPUT:
-        target_range = input("Target range: ")
-        target_range = int(target_range)
-
-        target_width = input("Target width: ")
-        target_width = int(target_width)
-    else:
-        target_range = 30
-        target_width = 3
-
-    while True:
-#    pdb.set_trace()
-        range_bot.execute_hunt(target_range, target_width)
+    # while True:
+    #     pdb.set_trace()
+    #     range_bot.execute_hunt(target_range, target_width)
 
     print("Bye!")
