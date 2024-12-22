@@ -47,8 +47,9 @@ class Radar():
             print("ERROR: Lidar failed to initialize.")
 
 
-    def scan(self, min_angle, max_angle, step):
-        """ The scan2 method uses the servo and Lidar to return a list of
+    def scan(self, min_angle=-90.0, max_angle=90.0, step=10.0):
+        """
+        The scan method uses the servo and Lidar to return a list of
         angle and range pairs.
 
         @type: float
