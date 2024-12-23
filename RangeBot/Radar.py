@@ -113,7 +113,7 @@ class Radar:
 
     def plot_scan(self, angles: List[float], ranges: List[float]):
         """
-        Plot the scan results as a polar plot.
+        Plot the scan results as a polar plot with lines from the origin to each point.
 
         Args:
             angles (List[float]): List of angles in radians.
@@ -124,7 +124,9 @@ class Radar:
         ax.set_theta_zero_location('N')
         ax.set_theta_direction(-1)
 
-        ax.plot(angles, ranges, marker='o')
+        for angle, distance in zip(angles, ranges):
+            ax.plot([0, angle], [0, distance], color='b')  # Draw line from origin to point
+
         ax.set_title("Radar Scan", va='bottom')
 
         plt.show()
