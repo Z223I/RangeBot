@@ -1,5 +1,3 @@
-#!usr/bin/python
-
 """Servo class
 Author: Bruce Wilson
 License: GNU 3
@@ -47,7 +45,7 @@ class Servo:
 
         # Initialise the PCA9685 using the default address (0x40).
 #        self.pwm = PCA9685.PCA9685()
-        self.pwm = PCA9685.PCA9685(address=0x41)
+        self.pwm = PCA9685.PCA9685(address=0x40)
 
         # Alternatively specify a different address and/or bus:
         # self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)

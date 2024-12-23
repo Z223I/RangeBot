@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import time
 import math
@@ -88,7 +86,7 @@ class Radar:
                 logger.warning("Servo functionality is disabled. Skipping angle movement.")
 
             # Allow servo to finish moving
-            time.sleep(1 if current_angle == min_angle else 0.1)
+            time.sleep(0.2 if current_angle == min_angle else 0.001)
 
             if self.lidar_initialized:
                 # Take multiple lidar readings to improve reliability
