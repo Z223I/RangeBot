@@ -1,34 +1,15 @@
-"""Servo class
-Author: Bruce Wilson
-License: GNU 3
-
-Based on...
-Simple demo of of the PCA9685 PWM servo/LED controller library.
-This will move channel 0 from min to max position repeatedly.
-Author: Tony DiCola
-License: Public Domain
-"""
-
-# from __future__ import division
 import time
-
-import sys
-
-# Import the PCA9685 module.
-#sys.path.append("/home/pi/pythondev/Adafruit_Python_PCA9685/Adafruit_PCA9685")
-#print( sys.path )
 from adafruit_pca9685 import PCA9685
-
-
-# Uncomment to enable debug output.
-# import logging
-# logging.basicConfig(level=logging.DEBUG)
+from board import SCL, SDA
+import busio
 
 class Servo:
+    """Servo class for controlling a servo motor using Adafruit PCA9685 library.
 
-    """ Class: Servo
-    This class provides a mechanism to control a servo based on angles.
-    The is a method for using pulse duration."""
+    Attributes:
+        channel (int): PCA9685 channel for the servo.
+        pwm (PCA9685): Instance of the PCA9685 class to control the servo.
+    """
 
     # Configure min and max servo pulse lengths
     SERVO_MIN = 130  # Min pulse length out of 4096
@@ -38,132 +19,100 @@ class Servo:
     ANGLE_MIN = -90
     ANGLE_MAX = 90
 
-    def __init__(self, _channel):
-        """ Method: __init__
-        Provides set up necessary to control a servo using
-        Adafruit's PCA9685 PWM board."""
+    def __init__(self, channel: int, address: int = 0x40):
+        """Initialize the Servo class with a specified PCA9685 channel and I2C address.
 
-        # Initialise the PCA9685 using the default address (0x40).
-#        self.pwm = PCA9685.PCA9685()
-        self.pwm = PCA9685(address=0x40)
+        Args:
+            channel (int): The channel number (0-15) on the PCA9685.
+            address (int, optional): I2C address of the PCA9685. Defaults to 0x40.
+        """
+        i2c = busio.I2C(SCL, SDA)
+        self.pwm = PCA9685(i2c, address=address)
+        self.pwm.frequency = 60  # Set frequency to 60 Hz, suitable for servos.
 
-        # Alternatively specify a different address and/or bus:
-        # self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
-
-        # Configure min and max servo pulse lengths
+        self.channel = channel
         self.servo_min = Servo.SERVO_MIN
         self.servo_max = Servo.SERVO_MAX
-
-        # Angles can be used to control the servo instead of using frequency.
         self.angle_min = Servo.ANGLE_MIN
         self.angle_max = Servo.ANGLE_MAX
-
-        self.channel = _channel
-
-        # Set frequency to 60hz, good for servos.
-        self.pwm.set_pwm_freq(60)
-
         self.angle = None
 
-    # Helper function to make setting a servo pulse width simpler.
-    def set_servo_pulse(self, channel, pulse):
+    def set_servo_pulse(self, pulse: int) -> None:
+        """Set the pulse width for the servo motor.
 
-        """ set_servo_pulse method
-        Author: Tony DiCola"""
-        pulse_length = 1000000    # 1,000,000 us per second
-        pulse_length //= 60       # 60 Hz
-        print('{0}us per period'.format(pulse_length))
-        pulse_length //= 4096     # 12 bits of resolution
-        print('{0}us per bit'.format(pulse_length))
-        pulse *= 1000
-        pulse //= pulse_length
-        self.pwm.set_pwm(channel, 0, pulse)
-
-    def get_angle(self):
-
-        """ Method: angle
-        Returns the approximate angle of the servo."""
-
-        return self.angle
-
-    def set_angle(self, _angle):
-        """ Move the servo to the desired angle.
-        Set the attribule angle.
+        Args:
+            pulse (int): The pulse width in microseconds.
         """
-        # Adjust for slight error in servo.
-        _angle += 6
+        pulse_length = 1000000  # 1,000,000 us per second
+        pulse_length //= self.pwm.frequency  # 60 Hz
+        pulse_length //= 4096  # 12 bits of resolution
+        pulse = int(pulse * 1000 / pulse_length)
+        self.pwm.channels[self.channel].duty_cycle = pulse
 
-        if _angle < self.ANGLE_MIN:
-            _angle = self.ANGLE_MIN
+    def get_angle(self) -> int:
+        """Retrieve the current angle of the servo.
 
-        if _angle > self.ANGLE_MAX:
-            _angle = self.ANGLE_MAX
-
-        # Calculate the usable azimuth range in degrees.
-        total_degrees = self.ANGLE_MAX - self.ANGLE_MIN
-
-        # Calculate the range of pulse durations.
-        total_pulse = self.SERVO_MAX - self.SERVO_MIN
-
-        pulse_per_degree = float(total_pulse) / float(total_degrees)
-
-#        print "Total usable pulse duration: ", total_pulse
-#        print "Pulse duration per degree: ", pulse_per_degree
-#        print "Adjusted angle: ", (_angle - self.ANGLE_MIN)
-
-        pulse = self.SERVO_MIN + (pulse_per_degree * (_angle - self.ANGLE_MIN))
-        pulse = int(pulse)
-        if pulse < self.SERVO_MIN:
-            pulse = self.SERVO_MIN
-        if pulse > self.SERVO_MAX:
-            pulse = self.SERVO_MAX
-
-        START_PULSE = 0
-
-#        print "Angle: ", _angle
-#        print "Pulse: ", pulse
-
-        self.pwm.set_pwm(self.channel, START_PULSE, pulse)
-
-        # TODO: Calculate the current angle based on the pulse duration.
-
-        self.angle = _angle
+        Returns:
+            int: The current angle of the servo in degrees.
+        """
         return self.angle
 
-    def test(self):
-        """ method test uses the pulse duration to exercise the servo between
-        min and max."""
+    def set_angle(self, angle: int) -> int:
+        """Set the servo to the specified angle.
 
-        for i in range(2):
-            START_PULSE = 0
-            self.pwm.set_pwm(self.channel, START_PULSE, self.servo_min)
+        Args:
+            angle (int): Desired angle in degrees (-90 to 90).
+
+        Returns:
+            int: The angle set after clamping.
+        """
+        if angle < self.angle_min:
+            angle = self.angle_min
+        if angle > self.angle_max:
+            angle = self.angle_max
+
+        total_degrees = self.angle_max - self.angle_min
+        total_pulse = self.servo_max - self.servo_min
+        pulse_per_degree = total_pulse / total_degrees
+        pulse = int(self.servo_min + (pulse_per_degree * (angle - self.angle_min)))
+        self.pwm.channels[self.channel].duty_cycle = pulse
+        self.angle = angle
+        return self.angle
+
+    def test(self) -> None:
+        """Test the servo by moving it between minimum and maximum pulse widths."""
+        for _ in range(2):
+            self.pwm.channels[self.channel].duty_cycle = self.servo_min
             time.sleep(1)
-            self.pwm.set_pwm(self.channel, START_PULSE, self.servo_max)
+            self.pwm.channels[self.channel].duty_cycle = self.servo_max
             time.sleep(1)
 
-    def test2(self):
-        """ method test2 uses angles to exercise the servo between min
-        and max."""
-        for i in range(3):
-            self.set_angle(-90)
+    def test2(self) -> None:
+        """Test the servo by moving it between minimum and maximum angles."""
+        for _ in range(3):
+            self.set_angle(self.angle_min)
             time.sleep(2)
-            self.set_angle(90)
+            self.set_angle(self.angle_max)
             time.sleep(2)
 
-    def center(self):
+    def center(self) -> None:
+        """Center the servo to 0 degrees."""
         self.set_angle(0)
 
+    def exec(self) -> None:
+        """Execute servo tests in a loop until interrupted by the user."""
+        print('Moving servo on channel 3, press Ctrl-C to quit...')
+        self.center()
+
+        try:
+            while True:
+                self.test()
+                time.sleep(1.5)
+                self.test2()
+                time.sleep(3)
+        except KeyboardInterrupt:
+            print("Program terminated.")
+
 if __name__ == "__main__":
-
-    print('Moving servo on channel 3, press Ctrl-C to quit...')
-
-    SERVO = Servo(3)
-
-    SERVO.center()
-
-    while True:
-        SERVO.test()
-        time.sleep(1.5)
-
-        SERVO.test2()
-        time.sleep(3)
+    servo = Servo(channel=3, address=0x41)
+    servo.exec()
