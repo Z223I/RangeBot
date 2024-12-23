@@ -15,9 +15,9 @@ import time
 import sys
 
 # Import the PCA9685 module.
-sys.path.append("/home/pi/pythondev/Adafruit_Python_PCA9685/Adafruit_PCA9685")
+#sys.path.append("/home/pi/pythondev/Adafruit_Python_PCA9685/Adafruit_PCA9685")
 #print( sys.path )
-import PCA9685
+from adafruit_pca9685 import PCA9685
 
 
 # Uncomment to enable debug output.
@@ -45,7 +45,7 @@ class Servo:
 
         # Initialise the PCA9685 using the default address (0x40).
 #        self.pwm = PCA9685.PCA9685()
-        self.pwm = PCA9685.PCA9685(address=0x40)
+        self.pwm = PCA9685(address=0x40)
 
         # Alternatively specify a different address and/or bus:
         # self.pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)

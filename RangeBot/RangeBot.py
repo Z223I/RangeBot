@@ -1,13 +1,5 @@
-#!usr/bin/python
-
-# DreamPie
-# J
-# Komodo Edit
-# SPE <-- **
-
-
 import sys
-sys.path.append("/home/pi/pythondev/LidarLite3Ext/LidarLite3Ext")
+#sys.path.append("/home/pi/pythondev/LidarLite3Ext/LidarLite3Ext")
 # print(sys.path)
 
 from LidarLite3Ext import LidarLite3Ext

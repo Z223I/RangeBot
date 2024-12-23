@@ -11,11 +11,13 @@ try:
     from LidarLite3Ext import LidarLite3Ext
 except ImportError:
     LidarLite3Ext = None
+    print("LidarLite3Ext failed to import.")
 
 try:
     from Servo import Servo
 except ImportError:
     Servo = None
+    print("Servo failed to import.")
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -139,8 +141,8 @@ class Radar:
 
             while True:
                 angles, ranges = self.scan()
-                for angle, distance in zip(angles, ranges):
-                    print(f"Angle: {math.degrees(angle):.1f}°, Distance: {distance:.1f} units")
+                #for angle, distance in zip(angles, ranges):
+                #    print(f"Angle: {math.degrees(angle):.1f}°, Distance: {distance:.1f} units")
 
                 print("--- Scan Complete ---")
 
