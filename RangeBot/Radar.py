@@ -65,13 +65,13 @@ class Radar:
             self.lidar_initialized = False
             logger.warning("LidarLite3Ext module not available. Lidar functionality will be disabled.")
 
-    def scan(self, min_angle: float = -90.0, max_angle: float = 90.0, step: float = 10.0) -> Tuple[List[float], List[float]]:
+    def scan(self, min_angle: float = 0, max_angle: float = 180.0, step: float = 10.0) -> Tuple[List[float], List[float]]:
         """
         Perform a scan by sweeping the servo through a range of angles and measuring distances.
 
         Args:
-            min_angle (float): The starting angle of the scan in degrees. Defaults to -90.0.
-            max_angle (float): The ending angle of the scan in degrees. Defaults to 90.0.
+            min_angle (float): The starting angle of the scan in degrees. Defaults to 0.
+            max_angle (float): The ending angle of the scan in degrees. Defaults to 180.0.
             step (float): The step size for the angle increments. Defaults to 10.0.
 
         Returns:
