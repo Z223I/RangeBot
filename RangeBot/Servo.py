@@ -22,7 +22,7 @@ class Servo:
     MAX_PULSE = 542
     FREQUENCY = 50   # Standard servo frequency of 50Hz
 
-    def __init__(self, pca: PCA9685, channel: int):
+    def __init__(self, channel: int):
         """
         Initialize the servo on a specific channel.
 
@@ -30,7 +30,10 @@ class Servo:
             pca: PCA9685 instance
             channel: PWM channel number (0-15)
         """
-        self.pca = pca
+        # Initialize I2C bus and PCA9685
+        i2c = busio.I2C(board.SCL, board.SDA)
+
+        self.pca = PCA9685(i2c)
         self.channel = channel
         self.pca.frequency = self.FREQUENCY
         self.current_angle = 0
@@ -79,12 +82,8 @@ def main():
     Main function to demonstrate servo control.
     """
     try:
-        # Initialize I2C bus and PCA9685
-        i2c = busio.I2C(board.SCL, board.SDA)
-        pca = PCA9685(i2c)
-
         # Create a servo on channel 3
-        servo = Servo(pca, 3)
+        servo = Servo(3)
 
         print("Starting servo demonstration...")
 
