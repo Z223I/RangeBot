@@ -114,5 +114,5 @@ class Servo:
             print("Program terminated.")
 
 if __name__ == "__main__":
-    servo = Servo(channel=3, address=0x41)
+    servo = Servo(channel=3, address=0x40)
     servo.exec()

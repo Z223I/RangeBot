@@ -29,9 +29,13 @@ class Servo:
 
         self.channel = channel
         self.servo_min = Servo.SERVO_MIN
+        print(self.servo_min)
         self.servo_max = Servo.SERVO_MAX
+        print(self.servo_max)
         self.angle_min = Servo.ANGLE_MIN
+        print(self.angle_min)
         self.angle_max = Servo.ANGLE_MAX
+        print(self.angle_max)
         self.angle = None
 
     def get_angle(self) -> int:
@@ -60,14 +64,19 @@ class Servo:
         pulse_width = int((angle - self.angle_min) * (self.servo_max - self.servo_min) / (self.angle_max - self.angle_min) + self.servo_min)
 
         # Set the pulse width on the PCA9685
-        self.pwm.channels[self.channel].duty_cycle = pulse_width * 16  # Convert to 16-bit value
+        self.pwm.channels[self.channel].duty_cycle = pulse_width #* 16  # Convert to 16-bit value
 
         self.angle = angle
         return angle
 
     def exec(self):
         # Example usage: Set the servo to 45 degrees
-        self.set_angle(45)
+        #self.set_angle(-90)
+        #self.set_angle(-45)
+        self.set_angle(0)
+        #self.set_angle(45)
+        #self.set_angle(90)
+        pass
 
 if __name__ == "__main__":
     servo = Servo(channel=3, address=0x40)
