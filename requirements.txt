@@ -1,0 +1,5 @@
+Adafruit-GPIO
+adafruit-circuitpython-lidarlite
+matplotlib
+Adafruit-PCA9685
+Adafruit-CircuitPython-PCA9685
