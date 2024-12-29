@@ -130,7 +130,7 @@ class Radar:
         ax.set_title("Radar Scan", va='bottom')
 
         plt.show()
-        plt.close()
+        #plt.close()
 
     def exec(self):
         """
